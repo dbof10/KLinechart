@@ -36,7 +36,6 @@
   ],
   "author": "liihuu",
   "license": "Apache-2.0",
-  "private": false,
   "scripts": {
     "lint": "eslint src/**/*.ts",
     "clean": "node scripts/clean.js",
@@ -46,8 +45,7 @@
     "build-umd:prod": "cross-env NODE_ENV=production node scripts/build-umd.js",
     "build-umd": "npm run build-umd:dev && npm run build-umd:prod",
     "build-core": "npm run build-esm && npm run build-cjs && npm run build-umd",
-    "build-dts": "dts-bundle-generator --no-banner true --fail-on-class true --umd-module-name klinecharts -o dist/index.d.ts src/index.ts",
-    "build": "npm run clean && npm run build-core && npm run build-dts",
+    "build": "npm run clean && npm run build-core",
     "prepare": "husky install",
     "docs:pre-work": "npm run pre-work --prefix docs",
     "docs:dev": "npm run dev --prefix docs",

@@ -88,6 +88,7 @@ export default class CandleAreaView extends ChildrenView {
             gradient.addColorStop(offset, color)
           })
         } catch (e) {
+          console.log("CandleAreaView " + e.toString())
         }
         color = gradient
       } else {

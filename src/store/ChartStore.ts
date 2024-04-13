@@ -281,7 +281,9 @@ export default class ChartStore {
           this._chart.adjustPaneViewport(false, true, true, true)
         }
         this._actionStore.execute(ActionType.OnDataReady)
-      } catch {}
+      } catch (error){
+        console.log("Chart store " + error.toString())
+      }
     }
   }
 

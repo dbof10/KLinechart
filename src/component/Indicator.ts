@@ -464,6 +464,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
       this.result = result
       return true
     } catch (e) {
+      console.trace(e)
       return false
     }
   }

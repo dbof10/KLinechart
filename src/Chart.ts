@@ -712,7 +712,7 @@ export default class ChartImp implements Chart {
   createIndicator (value: string | IndicatorCreate, isStack?: boolean, paneOptions?: Nullable<PaneOptions>, callback?: () => void): Nullable<string> {
     const indicator = isString(value) ? { name: value } : value
     if (getIndicatorClass(indicator.name) === null) {
-      logWarn('createIndicator', 'value', 'indicator not supported, you may need to use registerIndicator to add one!!!')
+      logWarn('createIndicator', 'value', `indicator not supported ${value}, you may need to use registerIndicator to add one!!!`)
       return null
     }
 
