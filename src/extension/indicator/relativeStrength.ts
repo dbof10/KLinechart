@@ -60,18 +60,18 @@ function calcRS(symbolData: KLineData[], marketData: KLineData[]): RS[] {
 
 function processDataForSameSize(chartData: KLineData[], marketData: KLineData[]): KLineData[][] {
   if (chartData.length > marketData.length) {
-    return removeDaysNotInShortList(chartData, marketData);
+    const newMarketData = stretchShorterList(chartData, marketData);
+    return [chartData, newMarketData];
   } else if (chartData.length < marketData.length) {
-    const newChartData = removeDaysNotInShortList(marketData, chartData);
-    return [newChartData[1], newChartData[0]];
+    const newSymbolData = stretchShorterList(marketData, chartData);
+    return [newSymbolData, marketData];
   } else {
     return [chartData, marketData];
   }
 }
 
-function removeDaysNotInShortList(longerList: KLineData[], shorterList: KLineData[]): KLineData[][] {
+function stretchShorterList(longerList: KLineData[], shorterList: KLineData[]): KLineData[] {
 
-  const newLongArray: KLineData[] = [];
   const newShortArray: KLineData[] = [];
 
   const firstLongDate = formatDate(longerList[0].timestamp);
@@ -92,14 +92,25 @@ function removeDaysNotInShortList(longerList: KLineData[], shorterList: KLineDat
     const longDate = formatDate(data.timestamp);
 
     if (map.has(longDate)) {
-      newLongArray.push(data);
 
       const shortItem = map.get(longDate);
       newShortArray.push(shortItem);
+    } else {
+
+      const prevDay = newShortArray[newShortArray.length - 1];
+      const clonePrevDay: KLineData = {
+        open: prevDay.open,
+        high: prevDay.high,
+        low: prevDay.low,
+        close: prevDay.close,
+        volume: prevDay.volume,
+        timestamp: data.timestamp,
+      };
+      newShortArray.push(clonePrevDay);
     }
   });
 
-  return [newLongArray, newShortArray];
+  return newShortArray;
 
 }
 

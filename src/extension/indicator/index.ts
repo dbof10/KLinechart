@@ -44,6 +44,7 @@ import volume from './volume'
 import volumeRatio from './volumeRatio'
 import williamsR from './williamsR'
 import relativeStrength from "./relativeStrength";
+import openInterest from "./openInterest";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -54,7 +55,7 @@ const extensions = [
   movingAverage, movingAverageConvergenceDivergence, onBalanceVolume, priceAndVolumeTrend,
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
-  relativeStrength
+  relativeStrength, openInterest
 ]
 
 extensions.forEach((indicator: IndicatorTemplate) => {

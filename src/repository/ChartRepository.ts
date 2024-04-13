@@ -25,3 +25,17 @@ export const fetchData: (symbol: string) => Promise<KLineData[]> = async (symbol
 
   })
 };
+
+export const fetchFutureData: () => Promise<FutureContract[]> = async () => {
+  const from = 1609434000;
+  const to = 1712996667;
+  const url = `https://vietvestors.online/v1/public/future/oi?from=${from}&to=${to}`;
+
+  const response = await fetch(url);
+  if (!response.ok) {
+    return [];
+  }
+  const jsonData: FutureContract[] = await response.json();
+
+  return jsonData;
+};
