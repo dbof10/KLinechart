@@ -9,38 +9,35 @@ import {
   type IndicatorTemplate,
 } from "../../component/Indicator";
 
-interface WeisVol {
+interface TBlockVol {
   volume?: number;
   color: string;
 }
 
-function getWeisVolumeFigure(): IndicatorFigure<WeisVol> {
+function getVolumeFigure(): IndicatorFigure<TBlockVol> {
   return {
     key: "volume",
-    title: "WEIS VOLUME: ",
+    title: "VAL: ",
     type: "bar",
     baseValue: 0,
-    styles: (data: IndicatorFigureStylesCallbackData<WeisVol>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
+    styles: (data: IndicatorFigureStylesCallbackData<TBlockVol>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
       const indi = data.current.indicatorData;
-
       return { color: indi?.color };
     },
   };
 }
 
-const weisVolume: IndicatorTemplate<WeisVol> = {
-  name: "WV",
-  shortName: "Weis Volume",
+const TBlockVolume: IndicatorTemplate<TBlockVol> = {
+  name: "TB",
+  shortName: "TBlock Volume",
   series: IndicatorSeries.Volume,
   shouldFormatBigNumber: true,
-  precision: 0,
-  minValue: 0,
   figures: [
-    getWeisVolumeFigure(),
+    getVolumeFigure(),
   ],
-  calc: (dataList: KLineData[], indicator: Indicator<WeisVol>) => {
+  calc: (dataList: KLineData[], indicator: Indicator<TBlockVol>) => {
     const { calcParams: params, figures } = indicator;
-    const volSums: WeisVol[] = [];
+    const volSums: TBlockVol[] = [];
 
     const DataStartIndex = 2; //start drawing
     const Reverse = false;
@@ -77,24 +74,48 @@ const weisVolume: IndicatorTemplate<WeisVol> = {
       while (Array_Direction[indexOfNewTrend] == Array_Direction[indexOfNewTrend - 1] && indexOfNewTrend > DataStartIndex) {
         indexOfNewTrend--;
       }
+
       let vol = 0;
+      let bidVol = 0;
+      let askVol = 0;
 
       for (let j = indexOfNewTrend; j <= i; j++) {
         vol += dataList[j].volume;
-        let colorAt: string;
 
+        const bid = 0;
+        const ask = 0;
+        // getPsuedoDelta(j, bid, ask, open, high, low, close, volume);
+
+        bidVol += bid;
+        askVol += ask;
+      }
+
+      for (let j = indexOfNewTrend; j <= i; j++) {
+
+        let colorAt: string;
+        let volAt: number;
         if (curDirection == 1) {
           colorAt = "blue";
         } else {
           colorAt = "red";
         }
+        if (curDirection == 1) {
+          volAt = vol;
+        } else {
+          volAt = vol * -1;
+        }
 
         volSums[j] = {
-          volume: vol,
+          volume: volAt,
           color: colorAt,
         };
 
+        // } else if (VolumeBasis == Delta) {
+        //   ExtVolumesBuffer[j] = askVol - bidVol;
+        // }
       }
+
+
     }
 
     return volSums;
@@ -102,4 +123,4 @@ const weisVolume: IndicatorTemplate<WeisVol> = {
 
 };
 
-export default weisVolume;
+export default TBlockVolume;
