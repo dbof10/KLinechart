@@ -92,14 +92,15 @@ export function formatPrecision (value: string | number, precision?: number): st
 export function formatBigNumber (value: string | number): string {
   const v = +value
   if (isNumber(v)) {
-    if (v > 1000000000) {
-      return `${+((v / 1000000000).toFixed(3))}B`
+    const absV = Math.abs(v);
+    if (absV > 1000000000) {
+      return `${+((v / 1000000000).toFixed(1))}B`
     }
-    if (v > 1000000) {
-      return `${+((v / 1000000).toFixed(3))}M`
+    if (absV > 1000000) {
+      return `${+((v / 1000000).toFixed(1))}M`
     }
-    if (v > 1000) {
-      return `${+((v / 1000).toFixed(3))}K`
+    if (absV > 1000) {
+      return `${+((v / 1000).toFixed(1))}K`
     }
   }
   return `${value}`

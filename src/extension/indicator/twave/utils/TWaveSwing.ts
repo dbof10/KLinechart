@@ -7,6 +7,7 @@ import { BarType } from "../model/BarType";
 import { Bar } from "../model/Bar";
 import KLineData from "../../../../common/KLineData";
 import { TextPosition } from "../model/TextPosition";
+import { calculateBuyAlgo, calculateSellAlgo } from "./TWaveAlgo";
 
 export const INDEX_START = 20;
 export const INDEX_START_SEARCH = -1;
@@ -72,8 +73,7 @@ function calculateSwingDown(lastSwingLowIndex: number,
     lastSwingHighIndex !== INDEX_START_SEARCH) {
 
     calculateAccumulatedVolumeSwingDown(lastSwingLowIndex, lastSwingHighIndex, data);
-    // calculateBuyAlgo(Array_DeltaVolume, Array_Signal, Array_Signal2, lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices,
-    //   open, high, low, close, volume);
+    calculateBuyAlgo(lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data);
   }
 }
 
@@ -159,6 +159,7 @@ function calculateSwingUp(lastSwingHighIndex: number,
     lastSwingHighIndex !== INDEX_START_SEARCH) {
 
     calculateAccumulatedVolumeSwingUp(lastSwingHighIndex, lastSwingLowIndex, data);
+    calculateSellAlgo(lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data);
   }
 }
 

@@ -3,11 +3,13 @@ import { IndicatorStyle } from "../../../common/Styles";
 import {
   Indicator,
   IndicatorFigure,
-  IndicatorFigureStylesCallbackData, IndicatorSeries,
+  IndicatorFigureStylesCallbackData,
+  IndicatorSeries,
   IndicatorTemplate,
 } from "../../../component/Indicator";
-import { formatValue } from "../../../common/utils/format";
 import { isValid } from "../../../common/utils/typeChecks";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
+
 interface Pace {
   pace: number;
 }
@@ -34,12 +36,12 @@ function getVolumeFigure(): IndicatorFigure<Pace> {
     baseValue: 0,
     styles: (data: IndicatorFigureStylesCallbackData<Pace>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
       const kLineData = data.current.kLineData;
-      let color = formatValue(indicator.styles, "bars[0].noChangeColor", (defaultStyles.bars)[0].noChangeColor);
+      let color: string;
       if (isValid(kLineData)) {
         if (kLineData.close > kLineData.open) {
-          color = formatValue(indicator.styles, "bars[0].upColor", (defaultStyles.bars)[0].upColor);
+          color = COLOR_DEMAND;
         } else {
-          color = formatValue(indicator.styles, "bars[0].downColor", (defaultStyles.bars)[0].downColor);
+          color = COLOR_SUPPLY;
         }
       }
       return { color: color as string };
@@ -60,8 +62,8 @@ const TPace: IndicatorTemplate<Pace> = {
     return dataList.map((kLineData: KLineData, i: number) => {
       const pace = getPace(kLineData);
       return {
-        pace: pace
-      }
+        pace: pace,
+      };
     });
   },
 };

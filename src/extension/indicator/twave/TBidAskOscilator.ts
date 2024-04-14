@@ -1,5 +1,7 @@
 import KLineData from "../../../common/KLineData";
-import { Indicator, IndicatorTemplate } from "../../../component/Indicator";
+import { Indicator, IndicatorFigureStylesCallbackData, IndicatorTemplate } from "../../../component/Indicator";
+import { IndicatorStyle } from "../../../common/Styles";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
 
 
 const Period = 20;
@@ -31,8 +33,20 @@ const TBidAskOscillator: IndicatorTemplate<BidAskOscillator> = {
   shortName: "TBidAsk Oscillator",
   shouldFormatBigNumber: true,
   figures: [
-    { key: "bid", title: "Supply: ", type: "line" },
-    { key: "ask", title: "Demand: ", type: "line" },
+    {
+      key: "bid",
+      title: "Supply: ",
+      type: "line",
+      styles: (data: IndicatorFigureStylesCallbackData<BidAskOscillator>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
+        return { color: COLOR_SUPPLY };
+      },
+    },
+    {
+      key: "ask", title: "Demand: ", type: "line",
+      styles: (data: IndicatorFigureStylesCallbackData<BidAskOscillator>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
+        return { color: COLOR_DEMAND };
+      },
+    },
   ],
   calc: (dataList: KLineData[], indicator: Indicator<BidAskOscillator>) => {
     const params = indicator.calcParams;

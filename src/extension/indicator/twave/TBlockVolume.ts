@@ -6,6 +6,7 @@ import {
   IndicatorFigureStylesCallbackData, IndicatorSeries,
   IndicatorTemplate,
 } from "../../../component/Indicator";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
 
 interface TBlockVol {
   volume?: number;
@@ -93,9 +94,9 @@ const TBlockVolume: IndicatorTemplate<TBlockVol> = {
         let colorAt: string;
         let volAt: number;
         if (curDirection == 1) {
-          colorAt = "blue";
+          colorAt = COLOR_DEMAND;
         } else {
-          colorAt = "red";
+          colorAt = COLOR_SUPPLY;
         }
         if (curDirection == 1) {
           volAt = vol;

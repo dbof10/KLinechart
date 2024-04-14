@@ -6,6 +6,7 @@ import {
   IndicatorFigureStylesCallbackData, IndicatorSeries,
   IndicatorTemplate,
 } from "../../../component/Indicator";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
 
 interface TWaveVol {
   volume?: number;
@@ -80,9 +81,9 @@ const TWaveVolume: IndicatorTemplate<TWaveVol> = {
         let colorAt: string;
 
         if (curDirection == 1) {
-          colorAt = "blue";
+          colorAt = COLOR_DEMAND;
         } else {
-          colorAt = "red";
+          colorAt = COLOR_SUPPLY;
         }
 
         volSums[j] = {

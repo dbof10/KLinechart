@@ -8,6 +8,7 @@ import {
   IndicatorFigureStylesCallbackData, IndicatorSeries,
   IndicatorTemplate,
 } from "../../../component/Indicator";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
 
 const Period = 20;
 
@@ -54,9 +55,9 @@ const TCumulativeDelta: IndicatorTemplate<CumulativeDelta> = {
       if (i >= Period) {
         const val = getCumDelta(i, dataList);
         if (val >= 0) {
-          cd.color = "blue";
+          cd.color = COLOR_DEMAND;
         } else {
-          cd.color = "red";
+          cd.color = COLOR_SUPPLY;
         }
         cd.cumDelta = val;
       }

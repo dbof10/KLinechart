@@ -20,6 +20,15 @@ import { TWaveKLineData } from "./model/TWaveKLineData";
 import { DrawData } from "./model/DrawData";
 import { TextPosition } from "./model/TextPosition";
 import { formatBigNumber } from "../../../common/utils/format";
+import {
+  SIGNAL_PULLBACK_BUY,
+  SIGNAL_PULLBACK_SELL,
+  SIGNAL_SPRING,
+  SIGNAL_STOOGE_BUY,
+  SIGNAL_STOOGE_SELL,
+  SIGNAL_UPTHRUST,
+} from "./utils/TWaveAlgo";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
 
 const SwingLength = 2;
 
@@ -278,18 +287,41 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
 
   return dataList.map((e: TWaveKLineData, index: number) => {
     const twave: TWave = { index: index.toString() };
-
-    if (e.totalVolume !== undefined) {
+    if (e.totalVolume !== undefined && e.totalDeltaVolume !== undefined) {
       twave.totalVolume = formatBigNumber(e.totalVolume);
+      twave.totalDeltaVolume = formatBigNumber(e.totalDeltaVolume);
       twave.textPosition = e.textPosition;
+      const signal1 = signalToString(e.algo);
+      const signal2 = signalToString(e.algo2);
+      twave.algo = signal1;
+      twave.secondAlgo = signal2;
     }
     twave.high = e.high;
     twave.low = e.low;
     return twave;
-
   });
 
 
+}
+
+function signalToString(value?: number): string {
+  if (value === undefined) {
+    return "";
+  }
+  switch (value) {
+    case SIGNAL_STOOGE_SELL:
+    case SIGNAL_STOOGE_BUY:
+      return "#";
+    case SIGNAL_SPRING:
+      return "SP";
+    case SIGNAL_UPTHRUST:
+      return "UT";
+    case SIGNAL_PULLBACK_BUY:
+    case SIGNAL_PULLBACK_SELL:
+      return "PB";
+    default:
+      return "";
+  }
 }
 
 const TWave: IndicatorTemplate<TWave> = {
@@ -311,7 +343,7 @@ const TWave: IndicatorTemplate<TWave> = {
         volume: e.volume,
         timestamp: e.timestamp,
         bidVol: e.bidVol,
-        askVol: e.askVol
+        askVol: e.askVol,
       };
       extendedData.push(item);
       highs.push(e.high);
@@ -330,7 +362,7 @@ const TWave: IndicatorTemplate<TWave> = {
          }) => {
     const { from, to } = visibleRange;
 
-    const fontSize = barSpace.bar * 1.5;
+    const fontSize = 14;
     ctx.font = `${fontSize}px Helvetica Neue`;
     ctx.textAlign = "center";
     const result = indicator.result;
@@ -338,15 +370,31 @@ const TWave: IndicatorTemplate<TWave> = {
       const data = result[i];
       const x = xAxis.convertToPixel(i);
 
-      console.log("size " + JSON.stringify(barSpace));
       if (data.totalVolume !== undefined) {
         const yBottom = yAxis.convertToPixel(data.low!);
         const yTop = yAxis.convertToPixel(data.high!);
-
         if (data.textPosition === TextPosition.Up) {
-          ctx.fillText(data.totalVolume?.toString(), x, yTop - 20);
+          ctx.fillStyle = COLOR_DEMAND;
+
+          const initialPadding = yTop - 10 - fontSize;
+          ctx.fillText(data.totalDeltaVolume?.toString(), x, initialPadding);
+          if (data.algo?.length > 0) {
+            ctx.fillText(data.algo!, x, initialPadding - 15 - fontSize);
+          }
+          if (data.secondAlgo?.length > 0) {
+            ctx.fillText(data.secondAlgo!, x, initialPadding - 30 - fontSize);
+          }
         } else {
-          ctx.fillText(data.totalVolume?.toString(), x, yBottom + 20);
+          ctx.fillStyle = COLOR_SUPPLY;
+
+          const initialPadding = yBottom + 10;
+          ctx.fillText(data.totalDeltaVolume?.toString(), x, initialPadding);
+          if (data.algo?.length > 0) {
+            ctx.fillText(data.algo!, x, initialPadding + 15 + fontSize);
+          }
+          if (data.secondAlgo?.length > 0) {
+            ctx.fillText(data.secondAlgo!, x, initialPadding + 30 + fontSize);
+          }
         }
       }
     }

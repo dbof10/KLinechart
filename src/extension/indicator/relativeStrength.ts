@@ -18,8 +18,8 @@ import { fetchData } from "../../repository/ChartRepository";
 import { formatDate } from "../../repository/utils/DateUtils";
 
 interface RS {
-  symbol: number;
-  market: number;
+  symbol?: number;
+  market?: number;
 }
 
 function calcRS(symbolData: KLineData[], marketData: KLineData[]): RS[] {
@@ -43,7 +43,7 @@ function calcRS(symbolData: KLineData[], marketData: KLineData[]): RS[] {
       sum += rsValue[i];
       rs[i] = {
         symbol: rsValue[i],
-        market: 0,
+        market: null,
       };
     } else {
       sum = sum - rsValue[i - period] + rsValue[i];
