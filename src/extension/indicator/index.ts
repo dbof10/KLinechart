@@ -47,6 +47,9 @@ import relativeStrength from "./relativeStrength";
 import openInterest from "./openInterest";
 import TWaveVolume from "./TWaveVolume";
 import TBlockVolume from "./TBlockVolume";
+import Tpace from "./Tpace";
+import TBidAskOscillator from "./TBidAskOscilator";
+import TCumulativeDelta from "./TCumulativeDelta";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -57,7 +60,7 @@ const extensions = [
   movingAverage, movingAverageConvergenceDivergence, onBalanceVolume, priceAndVolumeTrend,
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
-  relativeStrength, openInterest, TWaveVolume, TBlockVolume
+  relativeStrength, openInterest, TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta
 ]
 
 extensions.forEach((indicator: IndicatorTemplate) => {
