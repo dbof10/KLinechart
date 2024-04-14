@@ -1,6 +1,10 @@
 import KLineData from "../common/KLineData";
 
 
+
+
+
+
 export const fetchData: (symbol: string) => Promise<KLineData[]> = async (symbol: string) => {
     const resolution = "1D";
     const from = 1609434000;
@@ -11,7 +15,7 @@ export const fetchData: (symbol: string) => Promise<KLineData[]> = async (symbol
     if (!response.ok) {
       return [];
     }
-    const jsonData: Candle[] = await response.json();
+    const jsonData: Candle[] =  getMockResponse();//await response.json();
 
   return jsonData.map((e) => {
 

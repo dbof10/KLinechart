@@ -1,13 +1,13 @@
-import type KLineData from "../../common/KLineData";
-import { type IndicatorStyle } from "../../common/Styles";
 
+
+import KLineData from "../../../common/KLineData";
+import { IndicatorStyle } from "../../../common/Styles";
 import {
-  type Indicator,
-  type IndicatorFigure,
-  type IndicatorFigureStylesCallbackData,
-  IndicatorSeries,
-  type IndicatorTemplate,
-} from "../../component/Indicator";
+  Indicator,
+  IndicatorFigure,
+  IndicatorFigureStylesCallbackData, IndicatorSeries,
+  IndicatorTemplate,
+} from "../../../component/Indicator";
 
 const Period = 20;
 

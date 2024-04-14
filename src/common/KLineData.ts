@@ -22,5 +22,4 @@ export default interface KLineData {
   turnover?: number
   bidVol?: number
   askVol?: number
-  [key: string]: any
 }

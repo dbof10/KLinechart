@@ -1,43 +1,42 @@
-import type KLineData from "../../common/KLineData";
-import { type IndicatorStyle } from "../../common/Styles";
-
+import KLineData from "../../../common/KLineData";
+import { IndicatorStyle } from "../../../common/Styles";
 import {
-  type Indicator,
-  type IndicatorFigure,
-  type IndicatorFigureStylesCallbackData,
-  IndicatorSeries,
-  type IndicatorTemplate,
-} from "../../component/Indicator";
+  Indicator,
+  IndicatorFigure,
+  IndicatorFigureStylesCallbackData, IndicatorSeries,
+  IndicatorTemplate,
+} from "../../../component/Indicator";
 
-interface TBlockVol {
+interface TWaveVol {
   volume?: number;
   color: string;
 }
 
-function getVolumeFigure(): IndicatorFigure<TBlockVol> {
+function getVolumeFigure(): IndicatorFigure<TWaveVol> {
   return {
     key: "volume",
     title: "VAL: ",
     type: "bar",
     baseValue: 0,
-    styles: (data: IndicatorFigureStylesCallbackData<TBlockVol>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
+    styles: (data: IndicatorFigureStylesCallbackData<TWaveVol>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
       const indi = data.current.indicatorData;
+
       return { color: indi?.color };
     },
   };
 }
 
-const TBlockVolume: IndicatorTemplate<TBlockVol> = {
-  name: "TB",
-  shortName: "TBlock Volume",
+const TWaveVolume: IndicatorTemplate<TWaveVol> = {
+  name: "TW",
+  shortName: "TWave Volume",
   series: IndicatorSeries.Volume,
   shouldFormatBigNumber: true,
   figures: [
     getVolumeFigure(),
   ],
-  calc: (dataList: KLineData[], indicator: Indicator<TBlockVol>) => {
+  calc: (dataList: KLineData[], indicator: Indicator<TWaveVol>) => {
     const { calcParams: params, figures } = indicator;
-    const volSums: TBlockVol[] = [];
+    const volSums: TWaveVol[] = [];
 
     const DataStartIndex = 2; //start drawing
     const Reverse = false;
@@ -74,48 +73,24 @@ const TBlockVolume: IndicatorTemplate<TBlockVol> = {
       while (Array_Direction[indexOfNewTrend] == Array_Direction[indexOfNewTrend - 1] && indexOfNewTrend > DataStartIndex) {
         indexOfNewTrend--;
       }
-
       let vol = 0;
-      let bidVol = 0;
-      let askVol = 0;
 
       for (let j = indexOfNewTrend; j <= i; j++) {
         vol += dataList[j].volume;
-
-        const bid = 0;
-        const ask = 0;
-        // getPsuedoDelta(j, bid, ask, open, high, low, close, volume);
-
-        bidVol += bid;
-        askVol += ask;
-      }
-
-      for (let j = indexOfNewTrend; j <= i; j++) {
-
         let colorAt: string;
-        let volAt: number;
+
         if (curDirection == 1) {
           colorAt = "blue";
         } else {
           colorAt = "red";
         }
-        if (curDirection == 1) {
-          volAt = vol;
-        } else {
-          volAt = vol * -1;
-        }
 
         volSums[j] = {
-          volume: volAt,
+          volume: vol,
           color: colorAt,
         };
 
-        // } else if (VolumeBasis == Delta) {
-        //   ExtVolumesBuffer[j] = askVol - bidVol;
-        // }
       }
-
-
     }
 
     return volSums;
@@ -123,4 +98,4 @@ const TBlockVolume: IndicatorTemplate<TBlockVol> = {
 
 };
 
-export default TBlockVolume;
+export default TWaveVolume;
