@@ -127,15 +127,21 @@ const relativeStrength: IndicatorTemplate<RS> = {
     const params = indicator.calcParams;
 
     if (dataList.length > 0) {
-      const marketData = await fetchData("VN30F1M");
+      const marketData = await fetchData("VN30F1M", dataList[0].timestamp, dataList[dataList.length - 1].timestamp);
       if (marketData.length > 0) {
         const data = processDataForSameSize(dataList, marketData);
         return calcRS(data[0], data[1]);
       } else {
-        return [];
+        return dataList.map((e: KLineData) => {
+          const cd: RS = {};
+          return cd;
+        });
       }
     } else {
-      return [];
+      return dataList.map((e: KLineData) => {
+        const cd: RS = {};
+        return cd;
+      });
     }
   },
 };

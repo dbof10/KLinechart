@@ -4,42 +4,48 @@ import { fetchFutureData } from "../../repository/ChartRepository";
 import { formatDate } from "../../repository/utils/DateUtils";
 
 interface OI {
-  oi: number;
+  oi?: number;
 }
 
 
 const openInterest: IndicatorTemplate<OI> = {
   name: "OI",
   shortName: "OI",
+  minValue: 0,
   figures: [
     { key: "oi", title: "Aggregate OI: ", type: "line" },
   ],
   calc: async (dataList: KLineData[], indicator: Indicator<OI>) => {
     const { calcParams: params, figures } = indicator;
 
-    const futureData = await fetchFutureData();
+    if (dataList.length > 0) {
+      const futureData = await fetchFutureData(dataList[0].timestamp, dataList[dataList.length - 1].timestamp);
 
-    const map: Map<string, FutureContract> = new Map<string, FutureContract>();
+      const map: Map<string, FutureContract> = new Map<string, FutureContract>();
 
-    futureData.forEach(contract => {
-      map.set(contract.displayDate, contract);
-    });
+      futureData.forEach(contract => {
+        map.set(contract.displayDate, contract);
+      });
 
-    return dataList.map((kLineData, i) => {
-      const date = formatDate(kLineData.timestamp);
+      return dataList.map((kLineData, i) => {
+        const date = formatDate(kLineData.timestamp);
 
-      if (map.has(date)) {
-        const oi: OI = {
-          oi: map.get(date)!.io,
-        };
+        if (map.has(date)) {
+          const oi: OI = {
+            oi: map.get(date)!.io,
+          };
+          return oi;
+        } else {
+          const oi: OI = {};
+          return oi;
+        }
+      });
+    } else {
+      return dataList.map((e: KLineData) => {
+        const oi: OI = {};
         return oi;
-      } else {
-        const oi: OI = {
-          oi: 0
-        };
-        return oi;
-      }
-    });
+      });
+    }
   },
 };
 

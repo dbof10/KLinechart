@@ -1,12 +1,9 @@
 import KLineData from "../common/KLineData";
 
 
-export const fetchData: (symbol: string) => Promise<KLineData[]> = async (symbol: string) => {
+export const fetchData: (symbol: string, from: number, to: number) => Promise<KLineData[]> = async (symbol: string, from: number, to: number) => {
   const resolution = "1D";
-  const from = 1609434000;
-  const to = 1712885714;
-  const url = `https://vietvestors.online/v1/public/stocks/historical/${symbol}?resolution=${resolution}&from=${from}&to=${to}`;
-
+  const url = `https://vietvestors.online/v1/public/stocks/historical/${symbol}?resolution=${resolution}&from=${from / 1000}&to=${to / 1000}`;
   const response = await fetch(url);
   if (!response.ok) {
     return [];
@@ -26,11 +23,8 @@ export const fetchData: (symbol: string) => Promise<KLineData[]> = async (symbol
   });
 };
 
-export const fetchFutureData: () => Promise<FutureContract[]> = async () => {
-  const from = 1609434000;
-  const to = 1712996667;
-  const url = `https://vietvestors.online/v1/public/future/oi?from=${from}&to=${to}`;
-
+export const fetchFutureData: (from: number, to: number) => Promise<FutureContract[]> = async (from: number, to: number) => {
+  const url = `https://vietvestors.online/v1/public/future/oi?from=${from / 1000}&to=${to / 1000}`;
   const response = await fetch(url);
   if (!response.ok) {
     return [];
