@@ -29,6 +29,7 @@ const stopAndReverse: IndicatorTemplate<Sar> = {
   calcParams: [2, 2, 20],
   precision: 2,
   shouldOhlc: true,
+  isOverlay: true,
   figures: [
     {
       key: 'sar',

@@ -32,6 +32,7 @@ const movingAverage: IndicatorTemplate<Ma> = {
   calcParams: [5, 10, 30, 60],
   precision: 2,
   shouldOhlc: true,
+  isOverlay: true,
   figures: [
     { key: 'ma5', title: 'MA5: ', type: 'line' },
     { key: 'ma10', title: 'MA10: ', type: 'line' },

@@ -51,6 +51,7 @@ import Tpace from "./twave/Tpace";
 import TBidAskOscillator from "./twave/TBidAskOscilator";
 import TCumulativeDelta from "./twave/TCumulativeDelta";
 import TWave from "./twave/TWave";
+import { DisplayIndicator } from "./DisplayIndicator";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -64,6 +65,45 @@ const extensions = [
   relativeStrength, openInterest, TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave
 ]
 
+const mapName = {
+  "AVP": "Average Price",
+  "AO": "Awesome Oscillator",
+  "BIAS": "Bias",
+  "BOLL": "Bollinger Bands",
+  "BRAR": "BRAR",
+  "BBI": "Bull and Bear Index",
+  "CCI": "Commodity Channel Index",
+  "CR": "Current Ratio",
+  "DMA": "Different of Moving Average",
+  "DMI": "Directional Movement Index",
+  "EMV": "Ease of Movement Value",
+  "EMA": "Exponential Moving Average",
+  "MTM": "Momentum",
+  "MA": "Moving Average",
+  "MACD": "Moving Average Convergence Divergence",
+  "OBV": "On Balance Volume",
+  "PVT": "Price and Volume Trend",
+  "PSY": "Psychological Line",
+  "ROC": "Rate of Change",
+  "RSI": "Relative Strength Index",
+  "SMA": "Simple Moving Average",
+  "KDJ": "Stochastic Oscillator",
+  "SAR": "Stop and Reverse",
+  "TRIX": "Triple Exponentially Smoothed Average",
+  "VOL": "Volume",
+  "VR": "Volume Ratio",
+  "WR": "Williams %R",
+  "RS": "Relative Strength",
+  "OI": "Open Interest",
+  "TW": "TWave Histogram",
+  "TB": "TBlock Histogram",
+  "TPA": "Tpace",
+  "TBA": "TBid Ask Oscillator",
+  "TCD": "TCumulative Delta",
+  "TWA": "TWave",
+};
+
+
 extensions.forEach((indicator: IndicatorTemplate) => {
   indicators[indicator.name] = IndicatorImp.extend(indicator)
 })
@@ -76,8 +116,21 @@ function getIndicatorClass (name: string): Nullable<IndicatorConstructor> {
   return indicators[name] ?? null
 }
 
-function getSupportedIndicators (): string[] {
-  return Object.keys(indicators)
+function getSupportedIndicators (): DisplayIndicator[] {
+
+  const list: DisplayIndicator[] = [];
+  extensions.forEach((indicator: IndicatorTemplate) => {
+
+    const indi: DisplayIndicator = {
+      id: indicator.name,
+      name: mapName[indicator.name],
+      isOverlay: indicator.isOverlay !== undefined
+    }
+    list.push(indi);
+  })
+
+  return list;
+
 }
 
 export { registerIndicator, getIndicatorClass, getSupportedIndicators }

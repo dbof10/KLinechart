@@ -48,6 +48,7 @@ const bollingerBands: IndicatorTemplate<Boll> = {
   calcParams: [20, 2],
   precision: 2,
   shouldOhlc: true,
+  isOverlay: true,
   figures: [
     { key: 'up', title: 'UP: ', type: 'line' },
     { key: 'mid', title: 'MID: ', type: 'line' },

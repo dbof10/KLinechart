@@ -208,6 +208,11 @@ export interface Indicator<D = any> {
    * Calculation result
    */
   result: D[]
+
+  /**
+   * Declare if indicator is overlay on price chart
+   */
+  isOverlay: boolean
 }
 
 export type IndicatorTemplate<D = any> = ExcludePickPartial<Omit<Indicator<D>, 'result'>, 'name' | 'calc'>

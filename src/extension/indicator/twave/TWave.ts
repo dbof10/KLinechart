@@ -327,6 +327,7 @@ function signalToString(value?: number): string {
 const TWave: IndicatorTemplate<TWave> = {
   name: "TWA",
   shortName: "TWave",
+  isOverlay: true,
   calc: (dataList: KLineData[], _: Indicator<TWave>) => {
 
     const extendedData: TWaveKLineData[] = [];

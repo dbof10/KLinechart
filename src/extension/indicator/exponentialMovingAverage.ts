@@ -31,6 +31,7 @@ const exponentialMovingAverage: IndicatorTemplate<Ema> = {
   calcParams: [6, 12, 20],
   precision: 2,
   shouldOhlc: true,
+  isOverlay: true,
   figures: [
     { key: 'ema1', title: 'EMA6: ', type: 'line' },
     { key: 'ema2', title: 'EMA12: ', type: 'line' },

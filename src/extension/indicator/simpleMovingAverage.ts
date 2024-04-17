@@ -28,6 +28,7 @@ const simpleMovingAverage: IndicatorTemplate<Sma> = {
   series: IndicatorSeries.Price,
   calcParams: [12, 2],
   precision: 2,
+  isOverlay: true,
   figures: [
     { key: 'sma', title: 'SMA: ', type: 'line' }
   ],
