@@ -1,5 +1,19 @@
 # 📠 Change Log
 
+## 9.8.5
+`2024-04-14`
++ 💄 Optimize the default right offset distance of the chart.
++ 🐞 Fix area chart display issue.
++ 🐞 Fix occasional blank spaces in chart.
+
+## 9.8.3
+`2024-04-12`
++ 💄 Optimize styles by adding `offsetLeft`, `offsetTop`, `offsetRight` and `offsetBottom` to `candle.tooltip` and `indicator.tooltip`.
++ 💄 Optimize figure and support array for attrs.
++ 💄 Optimize y-axis render.
++ 💄 Optimize default display, change the default candle width to 8.
++ 🐞 Fix `applyMoreData` add duplicate data issue. [@cryptotooltop](https://github.com/cryptotooltop)
+
 ## 9.8.2
 `2024-03-26`
 + 💄 Optimize the display of the area chart.

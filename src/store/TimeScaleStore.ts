@@ -42,9 +42,9 @@ const enum ScrollLimitRole {
   Distance
 }
 
-const DEFAULT_BAR_SPACE = 6
+const DEFAULT_BAR_SPACE = 8
 
-const DEFAULT_OFFSET_RIGHT_DISTANCE = 50
+const DEFAULT_OFFSET_RIGHT_DISTANCE = 80
 
 export default class TimeScaleStore {
   /**
