@@ -43,12 +43,16 @@ export function getParallelLines (coordinates: Coordinate[], bounding: Bounding,
         }
       }
     } else {
-      const startX = 0
-      const endX = bounding.width
+      const startX = coordinates[0].x
+      let endX = 0
       const kb = getLinearSlopeIntercept(coordinates[0], coordinates[1])!
       const k = kb[0]
       const b = kb[1]
-      lines.push({ coordinates: [{ x: startX, y: startX * k + b }, { x: endX, y: endX * k + b }] })
+      if(coordinates.length > 1) {
+        endX = coordinates[1].x;
+        lines.push({ coordinates: [{ x: startX, y: startX * k + b }, { x: endX, y: endX * k + b }] })
+      }
+
       if (coordinates.length > 2) {
         const b1 = coordinates[2].y - k * coordinates[2].x
         lines.push({ coordinates: [{ x: startX, y: startX * k + b1 }, { x: endX, y: endX * k + b1 }] })
