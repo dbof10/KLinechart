@@ -12,9 +12,10 @@
  * limitations under the License.
  */
 
-import { OverlayTemplate, utils, registerFigure } from 'klinecharts'
 import { getDistance, getRotateCoordinate } from "./utils/utils";
 import { getRayLine } from "./rayLine";
+import { OverlayTemplate } from "../../component/Overlay";
+import { utils } from "../../index";
 
 
 const fibonacciSpiral: OverlayTemplate = {

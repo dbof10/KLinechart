@@ -11,8 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { OverlayTemplate } from "../../component/Overlay";
+import { CircleAttrs } from "../figure/circle";
+import { TextAttrs } from "../figure/text";
 
-import { OverlayTemplate, CircleAttrs, TextAttrs } from 'klinecharts'
 
 const fibonacciCircle: OverlayTemplate = {
   name: 'fibonacciCircle',

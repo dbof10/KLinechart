@@ -11,8 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { OverlayTemplate } from "../../component/Overlay";
+import { LineAttrs } from "../figure/line";
+import { PolygonAttrs } from "../figure/polygon";
 
-import { OverlayTemplate, PolygonAttrs, LineAttrs } from 'klinecharts'
 
 const xabcd: OverlayTemplate = {
   name: 'xabcd',

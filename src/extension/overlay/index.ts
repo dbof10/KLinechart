@@ -17,7 +17,6 @@ import type Nullable from '../../common/Nullable'
 import OverlayImp, { type OverlayTemplate, type OverlayConstructor, type OverlayInnerConstructor } from '../../component/Overlay'
 
 import fibonacciLine from './fibonacciLine'
-import horizontalRayLine from './horizontalRayLine'
 import horizontalSegment from './horizontalSegment'
 import horizontalStraightLine from './horizontalStraightLine'
 import parallelStraightLine from './parallelStraightLine'
@@ -26,7 +25,6 @@ import priceLine from './priceLine'
 import rayLine from './rayLine'
 import segment from './segment'
 import straightLine from './straightLine'
-import verticalRayLine from './verticalRayLine'
 import verticalSegment from './verticalSegment'
 import verticalStraightLine from './verticalStraightLine'
 
@@ -53,9 +51,9 @@ import eightWaves from "./eightWaves";
 const overlays: Record<string, OverlayInnerConstructor> = {}
 
 const extensions = [
-  fibonacciLine, horizontalRayLine, horizontalSegment, horizontalStraightLine,
+  fibonacciLine, horizontalSegment, horizontalStraightLine,
   parallelStraightLine, priceChannelLine, priceLine, rayLine, segment,
-  straightLine, verticalRayLine, verticalSegment, verticalStraightLine,
+  straightLine, verticalSegment, verticalStraightLine,
   simpleAnnotation, simpleTag, rect, arrow, circle, parallelogram, triangle,
   fibonacciCircle, fibonacciSegment, fibonacciExtension, fibonacciSpiral, fibonacciSpeedResistanceFan,
   gannBox, abcd, xabcd, anyWaves, threeWaves, fiveWaves, eightWaves

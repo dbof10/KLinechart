@@ -12,8 +12,8 @@
  * limitations under the License.
  */
 
-import { OverlayTemplate } from 'klinecharts'
 import { getDistance } from "./utils/utils";
+import { OverlayTemplate } from "../../component/Overlay";
 
 
 const circle: OverlayTemplate = {

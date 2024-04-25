@@ -11,8 +11,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { OverlayTemplate } from "../../component/Overlay";
+import { LineAttrs } from "../figure/line";
+import { TextAttrs } from "../figure/text";
 
-import { OverlayTemplate, LineAttrs, TextAttrs } from 'klinecharts'
 
 const fibonacciExtension: OverlayTemplate = {
   name: 'fibonacciExtension',
