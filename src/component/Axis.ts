@@ -50,6 +50,7 @@ export interface AxisTemplate {
 export default abstract class AxisImp implements Pick<AxisTemplate, 'createTicks'>, Axis {
   private readonly _parent: DrawPane<AxisImp>
 
+  private _defaultRange: AxisRange = { from: 0, to: 0, range: 0, realFrom: 0, realTo: 0, realRange: 0 } //to help reset to initial value
   private _range: AxisRange = { from: 0, to: 0, range: 0, realFrom: 0, realTo: 0, realRange: 0 }
   private _prevRange: AxisRange = { from: 0, to: 0, range: 0, realFrom: 0, realTo: 0, realRange: 0 }
   private _ticks: AxisTick[] = []
@@ -141,4 +142,9 @@ export default abstract class AxisImp implements Pick<AxisTemplate, 'createTicks
 
   abstract convertToPixel (value: number): number
   abstract convertFromPixel (px: number): number
+
+  protected reset(): void {
+    this._range = this._defaultRange;
+    this._autoCalcTickFlag = true;
+  }
 }

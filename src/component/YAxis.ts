@@ -34,11 +34,17 @@ interface FiguresResult {
 
 export interface YAxis extends Axis {
   isFromZero: () => boolean
+  resetRange(): () => void
 }
 
 export type YAxisConstructor = new (parent: DrawPane<AxisImp>) => YAxisImp
 
 export default abstract class YAxisImp extends AxisImp implements YAxis {
+
+  resetRange (): void {
+    this.reset();
+  }
+
   protected calcRange (): AxisRange {
     const parent = this.getParent()
     const chart = parent.getChart()
@@ -181,9 +187,10 @@ export default abstract class YAxisImp extends AxisImp implements YAxis {
       realRange = range
     }
 
-    return {
+    this._defaultRange = {
       from: min, to: max, range, realFrom: realMin, realTo: realMax, realRange
     }
+    return this._defaultRange
   }
 
   /**

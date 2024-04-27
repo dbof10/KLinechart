@@ -12,50 +12,51 @@
  * limitations under the License.
  */
 
-import type Nullable from './common/Nullable'
-import type DeepPartial from './common/DeepPartial'
-import type Bounding from './common/Bounding'
-import type KLineData from './common/KLineData'
-import type Coordinate from './common/Coordinate'
-import type Point from './common/Point'
-import { UpdateLevel } from './common/Updater'
-import { type Styles, YAxisPosition } from './common/Styles'
-import type Crosshair from './common/Crosshair'
-import { ActionType, type ActionCallback } from './common/Action'
-import type LoadMoreCallback from './common/LoadMoreCallback'
-import type LoadDataCallback from './common/LoadDataCallback'
-import type Precision from './common/Precision'
-import type VisibleRange from './common/VisibleRange'
+import type Nullable from "./common/Nullable";
+import type DeepPartial from "./common/DeepPartial";
+import type Bounding from "./common/Bounding";
+import type KLineData from "./common/KLineData";
+import type Coordinate from "./common/Coordinate";
+import type Point from "./common/Point";
+import { UpdateLevel } from "./common/Updater";
+import { type Styles, YAxisPosition } from "./common/Styles";
+import type Crosshair from "./common/Crosshair";
+import { type ActionCallback, ActionType } from "./common/Action";
+import type LoadMoreCallback from "./common/LoadMoreCallback";
+import type LoadDataCallback from "./common/LoadDataCallback";
+import { LoadDataType } from "./common/LoadDataCallback";
+import type Precision from "./common/Precision";
+import type VisibleRange from "./common/VisibleRange";
 
-import { createId } from './common/utils/id'
-import { createDom } from './common/utils/dom'
-import { getPixelRatio } from './common/utils/canvas'
-import { isString, isArray, isValid, merge, isNumber } from './common/utils/typeChecks'
-import { logWarn } from './common/utils/logger'
-import { binarySearchNearest } from './common/utils/number'
-import { LoadDataType } from './common/LoadDataCallback'
+import { createId } from "./common/utils/id";
+import { createDom } from "./common/utils/dom";
+import { getPixelRatio } from "./common/utils/canvas";
+import { isArray, isNumber, isString, isValid, merge } from "./common/utils/typeChecks";
+import { logWarn } from "./common/utils/logger";
+import { binarySearchNearest } from "./common/utils/number";
 
-import ChartStore from './store/ChartStore'
+import ChartStore from "./store/ChartStore";
 
-import CandlePane from './pane/CandlePane'
-import IndicatorPane from './pane/IndicatorPane'
-import XAxisPane from './pane/XAxisPane'
-import type DrawPane from './pane/DrawPane'
-import SeparatorPane from './pane/SeparatorPane'
+import CandlePane from "./pane/CandlePane";
+import IndicatorPane from "./pane/IndicatorPane";
+import XAxisPane from "./pane/XAxisPane";
+import type DrawPane from "./pane/DrawPane";
+import SeparatorPane from "./pane/SeparatorPane";
 
-import { type PaneOptions, PanePosition, PANE_DEFAULT_HEIGHT, PaneIdConstants } from './pane/types'
+import { PANE_DEFAULT_HEIGHT, PaneIdConstants, type PaneOptions, PanePosition } from "./pane/types";
 
-import type Axis from './component/Axis'
+import type Axis from "./component/Axis";
 
-import { type Indicator, type IndicatorCreate } from './component/Indicator'
-import { type Overlay, type OverlayCreate, type OverlayRemove } from './component/Overlay'
+import { type Indicator, type IndicatorCreate } from "./component/Indicator";
+import { type Overlay, type OverlayCreate, type OverlayRemove } from "./component/Overlay";
 
-import { getIndicatorClass } from './extension/indicator/index'
-import { getStyles as getExtensionStyles } from './extension/styles/index'
+import { getIndicatorClass } from "./extension/indicator/index";
+import { getStyles as getExtensionStyles } from "./extension/styles/index";
 
-import Event from './Event'
+import Event from "./Event";
 
-import { type CustomApi, LayoutChildType, type Options } from './Options'
+import { type CustomApi, LayoutChildType, type Options } from "./Options";
+import { YAxis } from "./component/YAxis";
 
 export enum DomPosition {
   Root = 'root',
@@ -1050,6 +1051,17 @@ export default class ChartImp implements Chart {
 
   resize (): void {
     this.adjustPaneViewport(true, true, true, true, true)
+  }
+
+  resetScale(): void {
+    this._drawPanes.forEach((pane: DrawPane) => {
+
+      if (pane.getId() === PaneIdConstants.CANDLE) {
+       const yAxis = (pane as DrawPane<YAxis>).getAxisComponent();
+       yAxis.resetRange();
+        this.adjustPaneViewport(false, true, true, true)
+      }
+    })
   }
 
   destroy (): void {
