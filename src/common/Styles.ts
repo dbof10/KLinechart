@@ -14,6 +14,7 @@
 
 import type Nullable from './Nullable'
 import type KLineData from './KLineData'
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../utils/ColorConstant";
 
 export interface Margin {
   marginLeft: number
@@ -395,10 +396,6 @@ export interface Styles {
   overlay: OverlayStyle
 }
 
-const red = '#F92855'
-const alphaRed = 'rgba(249, 40, 85, .7)'
-const green = '#2DC08E'
-const alphaGreen = 'rgba(45, 192, 142, .7)'
 const grey = '#888888'
 const white = '#FFFFFF'
 const blue = '#1677FF'
@@ -442,14 +439,14 @@ function getDefaultCandleStyle (): CandleStyle {
   return {
     type: CandleType.CandleSolid,
     bar: {
-      upColor: green,
-      downColor: red,
+      upColor: COLOR_DEMAND,
+      downColor: COLOR_SUPPLY,
       noChangeColor: grey,
-      upBorderColor: green,
-      downBorderColor: red,
+      upBorderColor: COLOR_DEMAND,
+      downBorderColor: COLOR_SUPPLY,
       noChangeBorderColor: grey,
-      upWickColor: green,
-      downWickColor: red,
+      upWickColor: COLOR_DEMAND,
+      downWickColor: COLOR_SUPPLY,
       noChangeWickColor: grey
     },
     area: {
@@ -480,8 +477,8 @@ function getDefaultCandleStyle (): CandleStyle {
       low: { ...highLow },
       last: {
         show: true,
-        upColor: green,
-        downColor: red,
+        upColor: COLOR_DEMAND,
+        downColor: COLOR_SUPPLY,
         noChangeColor: grey,
         line: {
           show: true,
@@ -568,8 +565,8 @@ function getDefaultIndicatorStyle (): IndicatorStyle {
 
   return {
     ohlc: {
-      upColor: alphaGreen,
-      downColor: alphaRed,
+      upColor: COLOR_DEMAND,
+      downColor: COLOR_SUPPLY,
       noChangeColor: grey
     },
     bars: [{
@@ -577,8 +574,8 @@ function getDefaultIndicatorStyle (): IndicatorStyle {
       borderStyle: LineType.Solid,
       borderSize: 1,
       borderDashedValue: [2, 2],
-      upColor: alphaGreen,
-      downColor: alphaRed,
+      upColor: COLOR_DEMAND,
+      downColor: COLOR_SUPPLY,
       noChangeColor: grey
     }],
     lines,
@@ -587,8 +584,8 @@ function getDefaultIndicatorStyle (): IndicatorStyle {
       borderStyle: LineType.Solid,
       borderSize: 1,
       borderDashedValue: [2, 2],
-      upColor: alphaGreen,
-      downColor: alphaRed,
+      upColor: COLOR_DEMAND,
+      downColor: COLOR_SUPPLY,
       noChangeColor: grey
     }],
     lastValueMark: {
