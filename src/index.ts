@@ -62,7 +62,6 @@ import { registerOverlay, getOverlayClass, getSupportedOverlays } from './extens
 import { registerStyles } from './extension/styles/index'
 import { registerXAxis } from './extension/x-axis'
 import { registerYAxis } from './extension/y-axis'
-
 const instances = new Map<string, ChartImp>()
 let chartBaseId = 1
 

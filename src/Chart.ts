@@ -573,10 +573,13 @@ export default class ChartImp implements Chart {
     if (isValid(realStyles?.yAxis?.type)) {
       this._candlePane?.getAxisComponent().setAutoCalcTickFlag(true)
     }
-    if(styles.crosshair.show) {
-      this._chartContainer.style.cursor = 'crosshair';
-    } else {
-      this._chartContainer.style.cursor = 'default';
+
+    if(styles.crosshair) {
+      if (styles.crosshair.show) {
+        this._chartContainer.style.cursor = 'crosshair';
+      } else {
+        this._chartContainer.style.cursor = 'default';
+      }
     }
     this.adjustPaneViewport(true, true, true, true, true)
   }
