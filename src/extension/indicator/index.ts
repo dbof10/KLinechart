@@ -52,6 +52,7 @@ import TBidAskOscillator from "./twave/TBidAskOscilator";
 import TCumulativeDelta from "./twave/TCumulativeDelta";
 import TWave from "./twave/TWave";
 import { DisplayIndicator } from "./DisplayIndicator";
+import { YesterdayStructure } from "./YesterdayStructure";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -62,7 +63,8 @@ const extensions = [
   movingAverage, movingAverageConvergenceDivergence, onBalanceVolume, priceAndVolumeTrend,
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
-  relativeStrength, openInterest, TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave
+  relativeStrength, openInterest, TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
+  YesterdayStructure
 ]
 
 const mapName = {
@@ -101,6 +103,7 @@ const mapName = {
   "TBA": "TBid Ask Oscillator",
   "TCD": "TCumulative Delta",
   "TWA": "TWave",
+  "YEST": "Yesterday Low",
 };
 
 
