@@ -40,6 +40,7 @@ import { calcTextWidth } from './common/utils/canvas'
 import { ActionType } from './common/Action'
 import { IndicatorSeries } from './component/Indicator'
 import { OverlayMode } from './component/Overlay'
+import { TradingSettings } from './model/TradingSettings'
 
 import { type Options, FormatDateType } from './Options'
 import ChartImp, { type Chart, DomPosition } from './Chart'
@@ -62,6 +63,7 @@ import { registerOverlay, getOverlayClass, getSupportedOverlays } from './extens
 import { registerStyles } from './extension/styles/index'
 import { registerXAxis } from './extension/x-axis'
 import { registerYAxis } from './extension/y-axis'
+
 const instances = new Map<string, ChartImp>()
 let chartBaseId = 1
 

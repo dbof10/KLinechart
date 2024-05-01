@@ -57,6 +57,7 @@ import Event from "./Event";
 
 import { type CustomApi, LayoutChildType, type Options } from "./Options";
 import { YAxis } from "./component/YAxis";
+import { TradingSettings } from "./model/TradingSettings";
 
 export enum DomPosition {
   Root = 'root',
@@ -1069,6 +1070,10 @@ export default class ChartImp implements Chart {
         this.adjustPaneViewport(false, true, true, true)
       }
     })
+  }
+  setTradingSettings(settings: TradingSettings) {
+    this._chartStore.setTradingSettings(settings)
+    this.updatePane(UpdateLevel.Main, this._candlePane?.getId())
   }
 
   destroy (): void {

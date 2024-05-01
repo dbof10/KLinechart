@@ -394,6 +394,7 @@ export interface Styles {
   separator: SeparatorStyle
   crosshair: CrosshairStyle
   overlay: OverlayStyle
+  sessionBreak: LineStyle
 }
 
 const grey = '#888888'
@@ -802,6 +803,16 @@ export function getDefaultStyles (): Styles {
     yAxis: getDefaultYAxisStyle(),
     separator: getDefaultSeparatorStyle(),
     crosshair: getDefaultCrosshairStyle(),
-    overlay: getDefaultOverlayStyle()
+    overlay: getDefaultOverlayStyle(),
+    sessionBreak: getSessionBreakStyle()
+  }
+}
+
+function getSessionBreakStyle (): LineStyle {
+  return {
+    size: 1,
+    color: grey,
+    style: LineType.Dashed,
+    dashedValue: [2, 2]
   }
 }

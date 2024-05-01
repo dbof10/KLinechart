@@ -12,29 +12,30 @@
  * limitations under the License.
  */
 
-import type Nullable from '../common/Nullable'
-import type KLineData from '../common/KLineData'
-import type Precision from '../common/Precision'
-import type VisibleData from '../common/VisibleData'
-import { getDefaultStyles, type Styles } from '../common/Styles'
-import { isArray, isNumber, isString, isValid, merge } from '../common/utils/typeChecks'
-import { formatValue } from '../common/utils/format'
-import type LoadDataCallback from '../common/LoadDataCallback'
-import { type LoadDataParams, LoadDataType } from '../common/LoadDataCallback'
-import type LoadMoreCallback from '../common/LoadMoreCallback'
-import { ActionType } from '../common/Action'
+import type Nullable from "../common/Nullable";
+import type KLineData from "../common/KLineData";
+import type Precision from "../common/Precision";
+import type VisibleData from "../common/VisibleData";
+import { getDefaultStyles, type Styles } from "../common/Styles";
+import { isArray, isNumber, isString, isValid, merge } from "../common/utils/typeChecks";
+import { formatValue } from "../common/utils/format";
+import type LoadDataCallback from "../common/LoadDataCallback";
+import { type LoadDataParams, LoadDataType } from "../common/LoadDataCallback";
+import type LoadMoreCallback from "../common/LoadMoreCallback";
+import { ActionType } from "../common/Action";
 
-import { getDefaultCustomApi, type CustomApi, defaultLocale, type Options } from '../Options'
+import { type CustomApi, defaultLocale, getDefaultCustomApi, type Options } from "../Options";
 
-import TimeScaleStore from './TimeScaleStore'
-import IndicatorStore from './IndicatorStore'
-import TooltipStore from './TooltipStore'
-import OverlayStore from './OverlayStore'
-import ActionStore from './ActionStore'
+import TimeScaleStore from "./TimeScaleStore";
+import IndicatorStore from "./IndicatorStore";
+import TooltipStore from "./TooltipStore";
+import OverlayStore from "./OverlayStore";
+import ActionStore from "./ActionStore";
 
-import { getStyles } from '../extension/styles/index'
+import { getStyles } from "../extension/styles/index";
 
-import type Chart from '../Chart'
+import type Chart from "../Chart";
+import { defaultSettings, TradingSettings } from "../model/TradingSettings";
 
 export default class ChartStore {
   /**
@@ -131,6 +132,8 @@ export default class ChartStore {
    * Visible data array
    */
   private _visibleDataList: VisibleData[] = []
+
+  private _tradingSettings: TradingSettings = defaultSettings;
 
   constructor (chart: Chart, options?: Options) {
     this._chart = chart
@@ -351,5 +354,13 @@ export default class ChartStore {
 
   getChart (): Chart {
     return this._chart
+  }
+
+  setTradingSettings(settings: TradingSettings) {
+    this._tradingSettings = settings;
+  }
+
+  getTradingSettings() : TradingSettings {
+    return this._tradingSettings
   }
 }

@@ -27,12 +27,14 @@ import { CandleType } from '../common/Styles'
 import type AxisPane from '../pane/DrawPane'
 
 import type YAxis from '../component/YAxis'
+import SessionBreakView from "../view/SessionBreakView";
 
 export default class CandleWidget extends IndicatorWidget {
   private readonly _candleBarView = new CandleBarView(this)
   private readonly _candleAreaView = new CandleAreaView(this)
   private readonly _candleHighLowPriceView = new CandleHighLowPriceView(this)
   private readonly _candleLastPriceLineView = new CandleLastPriceLineView(this)
+  private readonly _sessionBreakView = new SessionBreakView(this)
 
   constructor (rootContainer: HTMLElement, pane: AxisPane<YAxis>) {
     super(rootContainer, pane)
@@ -41,6 +43,9 @@ export default class CandleWidget extends IndicatorWidget {
 
   override updateMainContent (ctx: CanvasRenderingContext2D): void {
     const candleStyles = this.getPane().getChart().getStyles().candle
+    const chartStore = this.getPane().getChart().getChartStore();
+    const settings= chartStore.getTradingSettings();
+
     if (candleStyles.type !== CandleType.Area) {
       this._candleBarView.draw(ctx)
       this._candleHighLowPriceView.draw(ctx)
@@ -49,6 +54,9 @@ export default class CandleWidget extends IndicatorWidget {
       this._candleAreaView.draw(ctx)
     }
     this._candleLastPriceLineView.draw(ctx)
+    if(settings.drawSessionBreak) {
+      this._sessionBreakView.draw(ctx);
+    }
   }
 
   override createTooltipView (): IndicatorTooltipView {
