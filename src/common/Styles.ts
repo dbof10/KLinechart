@@ -418,7 +418,7 @@ function getDefaultGridStyle (): GridStyle {
     }
   }
   return {
-    show: true,
+    show: false,
     horizontal: item(),
     vertical: item()
   }
@@ -430,7 +430,7 @@ function getDefaultGridStyle (): GridStyle {
  */
 function getDefaultCandleStyle (): CandleStyle {
   const highLow = {
-    show: true,
+    show: false,
     color: textColor,
     textOffset: 5,
     textSize: 10,
@@ -477,7 +477,7 @@ function getDefaultCandleStyle (): CandleStyle {
       high: { ...highLow },
       low: { ...highLow },
       last: {
-        show: true,
+        show: false,
         upColor: COLOR_DEMAND,
         downColor: COLOR_SUPPLY,
         noChangeColor: grey,
