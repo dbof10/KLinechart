@@ -134,6 +134,7 @@ export interface Chart {
   unsubscribeAction: (type: ActionType, callback?: ActionCallback) => void
   getConvertPictureUrl: (includeOverlay?: boolean, type?: string, backgroundColor?: string) => string
   resize: () => void
+  setTradingSettings : (settings: TradingSettings) => void
 }
 
 export default class ChartImp implements Chart {

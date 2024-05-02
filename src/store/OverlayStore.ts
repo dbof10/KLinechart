@@ -12,22 +12,28 @@
  * limitations under the License.
  */
 
-import type Nullable from '../common/Nullable'
-import { UpdateLevel } from '../common/Updater'
-import { type MouseTouchEvent } from '../common/SyntheticEvent'
-import { isFunction, isValid, isString, isBoolean, isNumber, isArray } from '../common/utils/typeChecks'
-import { createId } from '../common/utils/id'
-import { LoadDataType } from '../common/LoadDataCallback'
+import type Nullable from "../common/Nullable";
+import { UpdateLevel } from "../common/Updater";
+import { type MouseTouchEvent } from "../common/SyntheticEvent";
+import { isArray, isBoolean, isFunction, isNumber, isString, isValid } from "../common/utils/typeChecks";
+import { createId } from "../common/utils/id";
+import { LoadDataType } from "../common/LoadDataCallback";
 
-import { type OverlayCreate, type OverlayRemove } from '../component/Overlay'
-import type OverlayImp from '../component/Overlay'
-import { OVERLAY_ID_PREFIX, OVERLAY_ACTIVE_Z_LEVEL } from '../component/Overlay'
+import type OverlayImp from "../component/Overlay";
+import {
+  OVERLAY_ACTIVE_Z_LEVEL,
+  OVERLAY_ID_PREFIX,
+  type OverlayCreate,
+  type OverlayRemove,
+} from "../component/Overlay";
 
-import { getOverlayInnerClass } from '../extension/overlay/index'
+import { getOverlayInnerClass } from "../extension/overlay/index";
 
-import type ChartStore from './ChartStore'
+import type ChartStore from "./ChartStore";
 
-import { PaneIdConstants } from '../pane/types'
+import { PaneIdConstants } from "../pane/types";
+import { OVERLAY_TRADING_GROUP_ID } from "../utils/OverlayConstant";
+import { ScheduleRemovedOverlay } from "./model/ScheduleRemovedOverlay";
 
 export interface ProgressOverlayInfo {
   paneId: string
@@ -365,6 +371,7 @@ export default class OverlayStore {
 
     const updatePaneIds: string[] = []
     const overlayRemoveValid = isValid(overlayRemove)
+
     if (this._progressInstanceInfo !== null) {
       const { instance } = this._progressInstanceInfo
       if (
@@ -376,6 +383,8 @@ export default class OverlayStore {
         this._progressInstanceInfo = null
       }
     }
+    const scheduleRemovedOverlays: Set<string> = new Set<string>();
+
     if (overlayRemoveValid) {
       const instances = new Map<string, OverlayImp[]>()
       for (const entry of this._instances) {
@@ -396,17 +405,25 @@ export default class OverlayStore {
       }
       this._instances = instances
     } else {
-      this._instances.forEach((paneInstances, paneId) => {
+
+      this._instances.forEach((overlays: OverlayImp[], paneId) => {
         updatePaneIds.push(paneId)
-        paneInstances.forEach(instance => {
-          instance.onRemoved?.({ overlay: instance })
+        overlays.forEach( (instance: OverlayImp ) => {
+          if(instance.groupId !== OVERLAY_TRADING_GROUP_ID){
+            scheduleRemovedOverlays.add(paneId + instance.id)
+            instance.onRemoved?.({ overlay: instance })
+          }
+
         })
       })
-      this._instances.clear()
     }
     if (updatePaneIds.length > 0) {
       const chart = this._chartStore.getChart()
       updatePaneIds.forEach(paneId => {
+        const overlays = this._instances
+          .get(paneId)
+          .filter((element: OverlayImp) => !scheduleRemovedOverlays.has(paneId + element.id))
+        this._instances.set(paneId, overlays)
         chart.updatePane(UpdateLevel.Overlay, paneId)
       })
       chart.updatePane(UpdateLevel.Overlay, PaneIdConstants.X_AXIS)

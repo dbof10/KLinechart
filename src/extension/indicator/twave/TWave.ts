@@ -388,7 +388,7 @@ const TWave: IndicatorTemplate<TWave> = {
         } else {
           ctx.fillStyle = COLOR_SUPPLY;
 
-          const initialPadding = yBottom + 10;
+          const initialPadding = yBottom + 10 + fontSize;
           ctx.fillText(data.totalDeltaVolume?.toString(), x, initialPadding);
           if (data.algo?.length > 0) {
             ctx.fillText(data.algo!, x, initialPadding + 15 + fontSize);
