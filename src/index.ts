@@ -40,7 +40,6 @@ import { calcTextWidth } from './common/utils/canvas'
 import { ActionType } from './common/Action'
 import { IndicatorSeries } from './component/Indicator'
 import { OverlayMode } from './component/Overlay'
-import { TradingSettings } from './model/TradingSettings'
 
 import { type Options, FormatDateType } from './Options'
 import ChartImp, { type Chart, DomPosition } from './Chart'

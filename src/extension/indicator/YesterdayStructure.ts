@@ -16,7 +16,7 @@ export const YesterdayStructure: IndicatorTemplate<HiLo> = {
 
     let currentDay: number;
 
-    let indi: HiLo[] = [];
+    const indi: HiLo[] = [];
 
     let high: number;
     let low: number;

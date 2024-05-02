@@ -12,6 +12,7 @@ const openInterest: IndicatorTemplate<OI> = {
   name: "OI",
   shortName: "OI",
   minValue: 0,
+  precision: 0,
   figures: [
     { key: "oi", title: "Aggregate OI: ", type: "line" },
   ],
