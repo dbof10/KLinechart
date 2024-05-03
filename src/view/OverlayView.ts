@@ -276,11 +276,7 @@ export default class OverlayView<C extends Axis = YAxis> extends View<C> {
 
   private _figureMouseRightClickEvent (overlay: Overlay, _figureType: EventOverlayInfoFigureType, figureKey: string, figureIndex: number, _attrsIndex: number): MouseTouchEventCallback {
     return (event: MouseTouchEvent) => {
-      if (!(overlay.onRightClick?.({ overlay, figureIndex, figureKey, ...event }) ?? false)) {
-        const pane = this.getWidget().getPane()
-        const overlayStore = pane.getChart().getChartStore().getOverlayStore()
-        overlayStore.removeInstance(overlay)
-      }
+      overlay.onRightClick?.({ overlay, figureIndex, figureKey, ...event })
       return true
     }
   }

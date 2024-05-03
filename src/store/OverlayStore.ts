@@ -33,7 +33,6 @@ import type ChartStore from "./ChartStore";
 
 import { PaneIdConstants } from "../pane/types";
 import { OVERLAY_TRADING_GROUP_ID } from "../utils/OverlayConstant";
-import { ScheduleRemovedOverlay } from "./model/ScheduleRemovedOverlay";
 
 export interface ProgressOverlayInfo {
   paneId: string
@@ -348,6 +347,7 @@ export default class OverlayStore {
   }
 
   removeInstance (overlayRemove?: OverlayRemove): void {
+
     const match: ((remove: OverlayRemove, overlay: OverlayImp) => boolean) = (remove: OverlayRemove, overlay: OverlayImp) => {
       if (isString(remove.id)) {
         if (overlay.id !== remove.id) {
@@ -406,24 +406,25 @@ export default class OverlayStore {
       this._instances = instances
     } else {
 
-      this._instances.forEach((overlays: OverlayImp[], paneId) => {
+      this._instances.forEach((overlays: OverlayImp[], paneId: string) => {
         updatePaneIds.push(paneId)
         overlays.forEach( (instance: OverlayImp ) => {
           if(instance.groupId !== OVERLAY_TRADING_GROUP_ID){
             scheduleRemovedOverlays.add(paneId + instance.id)
             instance.onRemoved?.({ overlay: instance })
           }
-
         })
       })
     }
+
     if (updatePaneIds.length > 0) {
       const chart = this._chartStore.getChart()
       updatePaneIds.forEach(paneId => {
-        const overlays = this._instances
-          .get(paneId)
-          .filter((element: OverlayImp) => !scheduleRemovedOverlays.has(paneId + element.id))
-        this._instances.set(paneId, overlays)
+        const overlays = this._instances.get(paneId);
+        if(overlays) {
+          const newOverlays = overlays.filter((element: OverlayImp) => !scheduleRemovedOverlays.has(paneId + element.id))
+          this._instances.set(paneId, newOverlays)
+        }
         chart.updatePane(UpdateLevel.Overlay, paneId)
       })
       chart.updatePane(UpdateLevel.Overlay, PaneIdConstants.X_AXIS)
