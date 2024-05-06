@@ -22,4 +22,5 @@ export default interface KLineData {
   turnover?: number
   bidVol?: number
   askVol?: number
+  isStartOfSession: boolean
 }

@@ -58,7 +58,6 @@ import Event from "./Event";
 import { type CustomApi, LayoutChildType, type Options } from "./Options";
 import { YAxis } from "./component/YAxis";
 import { TradingSettings } from "./model/TradingSettings";
-import { MouseEvent } from "happy-dom";
 
 export enum DomPosition {
   Root = 'root',
