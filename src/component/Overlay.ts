@@ -288,6 +288,7 @@ export const OVERLAY_FIGURE_KEY_PREFIX = 'overlay_figure_'
 
 export const OVERLAY_ACTIVE_Z_LEVEL = Number.MAX_SAFE_INTEGER
 
+export const SHIFT_SUPPORT = ["segment", "parallelStraightLine", "priceChannelLine"]
 export default abstract class OverlayImp implements Overlay {
   id: string
   groupId: string
@@ -328,6 +329,7 @@ export default abstract class OverlayImp implements Overlay {
 
   private _prevPressedPoint: Nullable<Partial<Point>> = null
   private _prevPressedPoints: Array<Partial<Point>> = []
+  private _isShiftPressed = false;
 
   constructor (overlay: OverlayTemplate) {
     const {
@@ -626,8 +628,18 @@ export default abstract class OverlayImp implements Overlay {
     if (isNumber(point.dataIndex)) {
       newPoint.dataIndex = point.dataIndex
     }
-    if (isNumber(point.value)) {
-      newPoint.value = point.value
+    if (pointIndex > 0 && SHIFT_SUPPORT.includes(this.name)) {
+      if (this._isShiftPressed) {
+        newPoint.value = this.points[0].value;
+      } else {
+        if (isNumber(point.value)) {
+          newPoint.value = point.value;
+        }
+      }
+    } else {
+      if (isNumber(point.value)) {
+        newPoint.value = point.value;
+      }
     }
     this.points[pointIndex] = newPoint
     this.performEventMoveForDrawing?.({
@@ -644,9 +656,21 @@ export default abstract class OverlayImp implements Overlay {
       this.points[pointIndex].dataIndex = point.dataIndex
       this.points[pointIndex].timestamp = point.timestamp
     }
-    if (isNumber(point.value)) {
-      this.points[pointIndex].value = point.value
+
+    if (pointIndex > 0 && SHIFT_SUPPORT.includes(this.name)) {
+      if (this._isShiftPressed) {
+        this.points[pointIndex].value = this.points[0].value;
+      } else {
+        if (isNumber(point.value)) {
+          this.points[pointIndex].value = point.value;
+        }
+      }
+    } else {
+      if (isNumber(point.value)) {
+        this.points[pointIndex].value = point.value;
+      }
     }
+
     this.performEventPressedMove?.({
       currentStep: this.currentStep,
       points: this.points,
@@ -686,6 +710,10 @@ export default abstract class OverlayImp implements Overlay {
         return newPoint
       })
     }
+  }
+
+  setShiftKeyPressed(isPressed: boolean): void {
+    this._isShiftPressed = isPressed;
   }
 
   static extend (template: OverlayTemplate): OverlayInnerConstructor {
