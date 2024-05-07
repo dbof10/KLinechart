@@ -16,7 +16,7 @@ import type Nullable from '../../common/Nullable'
 
 import OverlayImp, { type OverlayTemplate, type OverlayConstructor, type OverlayInnerConstructor } from '../../component/Overlay'
 
-import fibonacciLine from './fibonacciLine'
+import ruler from './ruler'
 import horizontalSegment from './horizontalSegment'
 import horizontalStraightLine from './horizontalStraightLine'
 import parallelStraightLine from './parallelStraightLine'
@@ -51,7 +51,7 @@ import eightWaves from "./eightWaves";
 const overlays: Record<string, OverlayInnerConstructor> = {}
 
 const extensions = [
-  fibonacciLine, horizontalSegment, horizontalStraightLine,
+  ruler, horizontalSegment, horizontalStraightLine,
   parallelStraightLine, priceChannelLine, priceLine, rayLine, segment,
   straightLine, verticalSegment, verticalStraightLine,
   simpleAnnotation, simpleTag, rect, arrow, circle, parallelogram, triangle,
