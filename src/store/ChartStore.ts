@@ -36,6 +36,7 @@ import { getStyles } from "../extension/styles/index";
 
 import type Chart from "../Chart";
 import { defaultSettings, TradingSettings } from "../model/TradingSettings";
+import { areSameHourAndMinute, isAfterMinute } from "../utils/TimeUtils";
 
 export default class ChartStore {
   /**
@@ -363,4 +364,50 @@ export default class ChartStore {
   getTradingSettings() : TradingSettings {
     return this._tradingSettings
   }
+
+  async addIntradayData(data: KLineData): Promise<void> {
+    let success = false;
+    let adjustFlag = false;
+    let dataLengthChange = 0;
+    const dataCount = this._dataList.length;
+    // Determine where individual data should be added
+    const timestamp = data.timestamp;
+    const lastDataTimestamp = formatValue(this._dataList[dataCount - 1], "timestamp", 0) as number;
+
+    if(areSameHourAndMinute(timestamp, lastDataTimestamp)) {
+      this._dataList[dataCount - 1] = data;
+      success = true;
+      adjustFlag = true;
+    } else if(isAfterMinute(timestamp, lastDataTimestamp)) {
+
+      this._dataList.push(data);
+
+      let lastBarRightSideDiffBarCount = this._timeScaleStore.getLastBarRightSideDiffBarCount();
+      if (lastBarRightSideDiffBarCount < 0) {
+        this._timeScaleStore.setLastBarRightSideDiffBarCount(--lastBarRightSideDiffBarCount);
+      }
+
+      dataLengthChange = 1;
+      success = true;
+      adjustFlag = true;
+    }
+
+    if (success) {
+
+      try {
+        this._overlayStore.updatePointPosition(dataLengthChange, null);
+        if (adjustFlag) {
+          this._timeScaleStore.adjustVisibleRange();
+          this._tooltipStore.recalculateCrosshair(true);
+          await this._indicatorStore.calcInstance();
+          this._chart.adjustPaneViewport(false, true, true, true);
+        }
+        this._actionStore.execute(ActionType.OnDataReady);
+      } catch (error) {
+        console.error(error)
+        console.log("Chart store " + error.toString());
+      }
+    }
+  }
+
 }

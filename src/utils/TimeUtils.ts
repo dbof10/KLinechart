@@ -17,3 +17,30 @@ export function areSameDay(epochMilliseconds1: number, epochMilliseconds2: numbe
     date1.getFullYear() === date2.getFullYear()
   );
 }
+
+
+export function areSameHourAndMinute(timestamp1: number, timestamp2: number): boolean {
+  const date1 = new Date(timestamp1);
+  const date2 = new Date(timestamp2);
+
+  const hour1 = date1.getHours();
+  const minute1 = date1.getMinutes();
+  const hour2 = date2.getHours();
+  const minute2 = date2.getMinutes();
+
+  return hour1 === hour2 && minute1 === minute2;
+}
+
+export function isAfterMinute(timestamp1: number, timestamp2: number): boolean {
+  const date1 = new Date(timestamp1);
+  const date2 = new Date(timestamp2);
+
+  const hour1 = date1.getHours();
+  const minute1 = date1.getMinutes();
+  const hour2 = date2.getHours();
+  const minute2 = date2.getMinutes();
+
+  if (hour1 > hour2) {
+    return true;
+  } else return hour1 === hour2 && minute1 > minute2;
+}

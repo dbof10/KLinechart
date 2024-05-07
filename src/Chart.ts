@@ -135,6 +135,7 @@ export interface Chart {
   getConvertPictureUrl: (includeOverlay?: boolean, type?: string, backgroundColor?: string) => string
   resize: () => void
   setTradingSettings : (settings: TradingSettings) => void
+  updateDataIntraDay: (data: KLineData, callback?: () => void) => void
 }
 
 export default class ChartImp implements Chart {
@@ -686,7 +687,8 @@ export default class ChartImp implements Chart {
     if (isValid(callback)) {
       logWarn('applyNewData', '', 'param `callback` has been deprecated since version 9.8.0, use `subscribeAction(\'onDataReady\')` instead.')
     }
-    this._chartStore.addData(data, LoadDataType.Init, more).then(() => {}).catch(() => {}).finally(() => { callback?.() })
+    const mutableArray: KLineData[] = [...data];
+    this._chartStore.addData(mutableArray, LoadDataType.Init, more).then(() => {}).catch(() => {}).finally(() => { callback?.() })
   }
 
   /**
@@ -695,7 +697,8 @@ export default class ChartImp implements Chart {
    */
   applyMoreData (data: KLineData[], more?: boolean, callback?: () => void): void {
     logWarn('', '', 'Api `applyMoreData` has been deprecated since version 9.8.0.')
-    this._chartStore.addData(data, LoadDataType.Forward, more ?? true).then(() => {}).catch(() => {}).finally(() => { callback?.() })
+    const mutableArray: KLineData[] = [...data];
+    this._chartStore.addData(mutableArray, LoadDataType.Forward, more ?? true).then(() => {}).catch(() => {}).finally(() => { callback?.() })
   }
 
   updateData (data: KLineData, callback?: () => void): void {
@@ -1088,5 +1091,9 @@ export default class ChartImp implements Chart {
     })
     this._separatorPanes.clear()
     this._container.removeChild(this._chartContainer)
+  }
+
+  updateDataIntraDay (data: KLineData, callback?: () => void): void {
+    this._chartStore.addIntradayData(data).then(() => {}).catch(() => {}).finally(() => { callback?.() })
   }
 }
