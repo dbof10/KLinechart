@@ -58,6 +58,7 @@ import Event from "./Event";
 import { type CustomApi, LayoutChildType, type Options } from "./Options";
 import { YAxis } from "./component/YAxis";
 import { TradingSettings } from "./model/TradingSettings";
+import { timeFrameToMilliseconds } from "./utils/TimeUtils";
 
 export enum DomPosition {
   Root = 'root',
@@ -136,6 +137,7 @@ export interface Chart {
   resize: () => void
   setTradingSettings : (settings: TradingSettings) => void
   updateDataIntraDay: (data: KLineData, callback?: () => void) => void
+  setTimeframe: (timeFrame: string) => void
 }
 
 export default class ChartImp implements Chart {
@@ -1078,6 +1080,10 @@ export default class ChartImp implements Chart {
   setTradingSettings(settings: TradingSettings) {
     this._chartStore.setTradingSettings(settings)
     this.updatePane(UpdateLevel.Main, this._candlePane?.getId())
+  }
+
+  setTimeframe(timeFrame: string) {
+    this._chartStore.setTimeframeDuration(timeFrameToMilliseconds(timeFrame))
   }
 
   destroy (): void {

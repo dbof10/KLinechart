@@ -254,9 +254,8 @@ export interface CandleTooltipStyle extends TooltipStyle, Offset {
 
 export enum CandleType {
   CandleSolid = 'candle_solid',
+  Renko = 'renko',
   CandleStroke = 'candle_stroke',
-  CandleUpStroke = 'candle_up_stroke',
-  CandleDownStroke = 'candle_down_stroke',
   Ohlc = 'ohlc',
   Area = 'area'
 }

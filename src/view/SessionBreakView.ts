@@ -2,7 +2,6 @@ import type VisibleData from "../common/VisibleData";
 
 import ChildrenView from "./ChildrenView";
 import { isValid } from "../common/utils/typeChecks";
-import { isSpecificHour } from "../utils/TimeUtils";
 
 export default class SessionBreakView extends ChildrenView {
 
@@ -12,13 +11,12 @@ export default class SessionBreakView extends ChildrenView {
     const chartStore = pane.getChart().getChartStore();
     const bounding = widget.getBounding();
     const lineStyle = chartStore.getStyles().sessionBreak;
-    const settings= chartStore.getTradingSettings();
 
     this.eachChildren((data: VisibleData) => {
       const { data: kLineData, x } = data;
       if (isValid(kLineData)) {
 
-        const canDrawAt = isSpecificHour(kLineData.timestamp, settings.tradingHours.morningSession.open);
+        const canDrawAt = kLineData.isStartOfSession;
 
         if(canDrawAt) {
           this.createFigure({

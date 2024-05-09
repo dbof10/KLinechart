@@ -30,26 +30,3 @@ export function cancelAnimationFrame (id: number): void {
     window.clearTimeout(id)
   }
 }
-
-export function requestIdleCallback (fn: IdleRequestCallback): number {
-  if (isFunction(window.requestIdleCallback)) {
-    return window.requestIdleCallback(fn)
-  }
-  const startTime = performance.now()
-  return window.setTimeout(function () {
-    fn({
-      didTimeout: false,
-      timeRemaining () {
-        return Math.max(0, 50 - (performance.now() - startTime))
-      }
-    })
-  }, 1)
-}
-
-export function cancelIdleCallback (id: number): void {
-  if (isFunction(window.cancelIdleCallback)) {
-    window.cancelIdleCallback(id)
-  } else {
-    window.clearTimeout(id)
-  }
-}

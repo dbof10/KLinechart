@@ -19,7 +19,8 @@ export function areSameDay(epochMilliseconds1: number, epochMilliseconds2: numbe
 }
 
 
-export function areSameHourAndMinute(timestamp1: number, timestamp2: number): boolean {
+export function areSameHourAndMinute(timestamp1: number, timestamp2: number, timeframe: number): boolean {
+  const timeframeInMinute = timeframe / (60*1000);
   const date1 = new Date(timestamp1);
   const date2 = new Date(timestamp2);
 
@@ -28,10 +29,12 @@ export function areSameHourAndMinute(timestamp1: number, timestamp2: number): bo
   const hour2 = date2.getHours();
   const minute2 = date2.getMinutes();
 
-  return hour1 === hour2 && minute1 === minute2;
+  return hour1 === hour2 && ((minute1 - minute2) < timeframeInMinute);
 }
 
-export function isAfterMinute(timestamp1: number, timestamp2: number): boolean {
+export function isAfterMinute(timestamp1: number, timestamp2: number, timeframe: number): boolean {
+  const timeframeInMinute = timeframe / (60*1000);
+
   const date1 = new Date(timestamp1);
   const date2 = new Date(timestamp2);
 
@@ -42,5 +45,23 @@ export function isAfterMinute(timestamp1: number, timestamp2: number): boolean {
 
   if (hour1 > hour2) {
     return true;
-  } else return hour1 === hour2 && minute1 > minute2;
+  } else return hour1 === hour2 && ((minute1 - minute2) >= timeframeInMinute);
 }
+
+export function timeFrameToMilliseconds(timeframe: string): number {
+  switch (timeframe) {
+    case '1M':
+      return 60 * 1000; // 1 minute
+    case '3M':
+      return 3 * 60 * 1000; // 3 minutes
+    case '15M':
+      return 15 * 60 * 1000; // 15 minutes
+    case '1H':
+      return 60 * 60 * 1000; // 1 hour
+    case '4H':
+      return 4 * 60 * 60 * 1000; // 4 hours
+    default:
+      return 0;
+  }
+}
+

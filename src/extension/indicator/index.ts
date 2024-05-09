@@ -54,18 +54,19 @@ import TWave from "./twave/TWave";
 import { DisplayIndicator } from "./DisplayIndicator";
 import { YesterdayStructure } from "./YesterdayStructure";
 import { VWAP } from "./VWAP";
+import averageTrueRange from "./atr";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
 const extensions = [
-  averagePrice, awesomeOscillator, bias, bollingerBands, brar,
+   awesomeOscillator, bias, bollingerBands, brar,
   bullAndBearIndex, commodityChannelIndex, currentRatio, differentOfMovingAverage,
   directionalMovementIndex, easeOfMovementValue, exponentialMovingAverage, momentum,
   movingAverage, movingAverageConvergenceDivergence, onBalanceVolume, priceAndVolumeTrend,
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
   relativeStrength, openInterest, TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
-  YesterdayStructure, VWAP
+  YesterdayStructure, VWAP, averageTrueRange
 ]
 
 const mapName = {
@@ -105,7 +106,8 @@ const mapName = {
   "TCD": "TCumulative Delta",
   "TWA": "TWave",
   "YEST": "Yesterday Low",
-  "VWAP": "VWAP"
+  "VWAP": "VWAP",
+  "ATR": "Average True Range"
 };
 
 

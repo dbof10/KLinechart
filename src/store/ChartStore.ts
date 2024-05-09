@@ -36,7 +36,8 @@ import { getStyles } from "../extension/styles/index";
 
 import type Chart from "../Chart";
 import { defaultSettings, TradingSettings } from "../model/TradingSettings";
-import { areSameHourAndMinute, isAfterMinute } from "../utils/TimeUtils";
+import { areEqualInSameMinute, areSameHourAndMinute, isAfterMinute } from "../utils/TimeUtils";
+import { duration } from "happy-dom/lib/PropertySymbol";
 
 export default class ChartStore {
   /**
@@ -135,6 +136,7 @@ export default class ChartStore {
   private _visibleDataList: VisibleData[] = []
 
   private _tradingSettings: TradingSettings = defaultSettings;
+  private _timeFrameDuration = 0;
 
   constructor (chart: Chart, options?: Options) {
     this._chart = chart
@@ -365,6 +367,10 @@ export default class ChartStore {
     return this._tradingSettings
   }
 
+  setTimeframeDuration(duration: number): void {
+    this._timeFrameDuration = duration
+  }
+
   async addIntradayData(data: KLineData): Promise<void> {
     let success = false;
     let adjustFlag = false;
@@ -374,12 +380,11 @@ export default class ChartStore {
     const timestamp = data.timestamp;
     const lastDataTimestamp = formatValue(this._dataList[dataCount - 1], "timestamp", 0) as number;
 
-    if(areSameHourAndMinute(timestamp, lastDataTimestamp)) {
+    if(areSameHourAndMinute(timestamp, lastDataTimestamp, this._timeFrameDuration)) {
       this._dataList[dataCount - 1] = data;
       success = true;
       adjustFlag = true;
-    } else if(isAfterMinute(timestamp, lastDataTimestamp)) {
-
+    } else if(isAfterMinute(timestamp, lastDataTimestamp,  this._timeFrameDuration)) {
       this._dataList.push(data);
 
       let lastBarRightSideDiffBarCount = this._timeScaleStore.getLastBarRightSideDiffBarCount();

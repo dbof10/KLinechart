@@ -111,31 +111,18 @@ export default class CandleBarView extends ChildrenView {
             yAxis.convertToPixel(low),
           ];
           priceY.sort((a, b) => a - b);
-
           let rects: Array<FigureCreate<RectAttrs | RectAttrs[], Partial<RectStyle>>> = [];
           switch (type) {
+            case CandleType.Renko: {
+              rects = this._createSolidBar(x, priceY, barSpace, colors);
+              break;
+            }
             case CandleType.CandleSolid: {
               rects = this._createSolidBar(x, priceY, barSpace, colors);
               break;
             }
             case CandleType.CandleStroke: {
               rects = this._createStrokeBar(x, priceY, barSpace, colors);
-              break;
-            }
-            case CandleType.CandleUpStroke: {
-              if (close > open) {
-                rects = this._createStrokeBar(x, priceY, barSpace, colors);
-              } else {
-                rects = this._createSolidBar(x, priceY, barSpace, colors);
-              }
-              break;
-            }
-            case CandleType.CandleDownStroke: {
-              if (open > close) {
-                rects = this._createStrokeBar(x, priceY, barSpace, colors);
-              } else {
-                rects = this._createSolidBar(x, priceY, barSpace, colors);
-              }
               break;
             }
             case CandleType.Ohlc: {
