@@ -30,6 +30,7 @@ import { isValid, merge, clone } from '../common/utils/typeChecks'
 import { type ArcAttrs } from '../extension/figure/arc'
 import { type RectAttrs } from '../extension/figure/rect'
 import { type TextAttrs } from '../extension/figure/text'
+import { Alert } from "../extension/indicator/Alert";
 
 export enum IndicatorSeries {
   Normal = 'normal',
@@ -112,6 +113,7 @@ export interface IndicatorDrawParams<D = any> {
 
 export type IndicatorDrawCallback<D = any> = (params: IndicatorDrawParams<D>) => boolean
 export type IndicatorCalcCallback<D> = (dataList: KLineData[], indicator: Indicator<D>) => Promise<D[]> | D[]
+export type IndicatorAlertCallback = (alert: Alert) => void
 
 export interface Indicator<D = any> {
   /**
@@ -213,6 +215,11 @@ export interface Indicator<D = any> {
    * Declare if indicator is overlay on price chart
    */
   isOverlay: boolean
+
+  /**
+   * Custom draw
+   */
+  alertCallback: Nullable<IndicatorAlertCallback>
 }
 
 export type IndicatorTemplate<D = any> = ExcludePickPartial<Omit<Indicator<D>, 'result'>, 'name' | 'calc'>
@@ -304,6 +311,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
   regenerateFigures: Nullable<IndicatorRegenerateFiguresCallback<D>>
   createTooltipDataSource: Nullable<IndicatorCreateTooltipDataSourceCallback>
   draw: Nullable<IndicatorDrawCallback<D>>
+  alertCallback: Nullable<IndicatorAlertCallback>
 
   result: D[] = []
 
@@ -314,7 +322,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
       name, shortName, series, calcParams, figures, precision,
       shouldOhlc, shouldFormatBigNumber, visible, zLevel,
       minValue, maxValue, styles, extendData,
-      regenerateFigures, createTooltipDataSource, draw
+      regenerateFigures, createTooltipDataSource, draw, alertCallback,
     } = indicator
     this.name = name
     this.shortName = shortName ?? name
@@ -333,6 +341,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
     this.regenerateFigures = regenerateFigures ?? null
     this.createTooltipDataSource = createTooltipDataSource ?? null
     this.draw = draw ?? null
+    this.alertCallback = alertCallback ?? null
   }
 
   setShortName (shortName: string): boolean {
@@ -463,9 +472,17 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
     return false
   }
 
+  setAlert (callback: Nullable<IndicatorAlertCallback>): boolean {
+    if (this.alertCallback !== callback) {
+      this.alertCallback = callback
+      return true
+    }
+    return false
+  }
+
   async calcIndicator (dataList: KLineData[]): Promise<boolean> {
     try {
-      const result = await this.calc(dataList, this)
+      const result = await this.calc(dataList, this, this.alertCallback)
       this.result = result
       return true
     } catch (e) {
@@ -474,7 +491,7 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
     }
   }
 
-  abstract calc (dataList: KLineData[], indicator: Indicator<D>): D[] | Promise<D[]>
+  abstract calc (dataList: KLineData[], indicator: Indicator<D>, alertCallback: Nullable<IndicatorAlertCallback>): D[] | Promise<D[]>
 
   static extend<D> (template: IndicatorTemplate): IndicatorConstructor<D> {
     class Custom extends IndicatorImp<D> {
@@ -482,8 +499,8 @@ export default abstract class IndicatorImp<D = any> implements Indicator<D> {
         super(template)
       }
 
-      calc (dataList: KLineData[], indicator: Indicator<D>): D[] | Promise<D[]> {
-        return template.calc(dataList, indicator)
+      calc (dataList: KLineData[], indicator: Indicator<D>, alertCallback: Nullable<IndicatorAlertCallback>): D[] | Promise<D[]> {
+        return template.calc(dataList, indicator, alertCallback)
       }
     }
     return Custom

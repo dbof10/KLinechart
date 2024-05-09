@@ -12,12 +12,18 @@
  * limitations under the License.
  */
 
-import type KLineData from '../../common/KLineData'
-import { type IndicatorStyle } from '../../common/Styles'
-import { formatValue } from '../../common/utils/format'
-import { isValid } from '../../common/utils/typeChecks'
+import type KLineData from "../../common/KLineData";
+import { type IndicatorStyle } from "../../common/Styles";
+import { formatValue } from "../../common/utils/format";
+import { isValid } from "../../common/utils/typeChecks";
 
-import { type Indicator, type IndicatorTemplate, type IndicatorFigureStylesCallbackData, IndicatorSeries, type IndicatorFigure } from '../../component/Indicator'
+import {
+  type Indicator,
+  type IndicatorFigure,
+  type IndicatorFigureStylesCallbackData,
+  IndicatorSeries,
+  type IndicatorTemplate,
+} from "../../component/Indicator";
 
 interface Vol {
   volume?: number

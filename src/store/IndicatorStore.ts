@@ -35,7 +35,7 @@ export default class IndicatorStore {
     const {
       shortName, series, calcParams, precision, figures, minValue, maxValue,
       shouldOhlc, shouldFormatBigNumber, visible, zLevel, styles, extendData,
-      regenerateFigures, createTooltipDataSource, draw, calc
+      regenerateFigures, createTooltipDataSource, draw, calc, alertCallback
     } = indicator
     let updateFlag = false
     if (isString(shortName) && instance.setShortName(shortName)) {
@@ -92,6 +92,9 @@ export default class IndicatorStore {
     if (draw !== undefined && instance.setDraw(draw)) {
       updateFlag = true
     }
+    if(alertCallback != undefined && instance.setAlert(alertCallback)) {
+      updateFlag = true
+    }
     if (isFunction(calc)) {
       instance.calc = calc
       calcFlag = true
@@ -115,7 +118,7 @@ export default class IndicatorStore {
     if (isValid(paneInstances)) {
       const instance = paneInstances.find(ins => ins.name === name)
       if (isValid(instance)) {
-        return await Promise.reject(new Error('Duplicate indicators.'))
+        return Promise.reject(new Error('Duplicate indicators.'))
       }
     }
     if (!isValid(paneInstances)) {
@@ -123,6 +126,8 @@ export default class IndicatorStore {
     }
     const IndicatorClazz = getIndicatorClass(name)!
     const instance = new IndicatorClazz()
+    instance.alertCallback = indicator.alertCallback;
+
     this._overrideInstance(instance, indicator)
     if (!isStack) {
       paneInstances = []

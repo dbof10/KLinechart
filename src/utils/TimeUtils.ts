@@ -65,3 +65,26 @@ export function timeFrameToMilliseconds(timeframe: string): number {
   }
 }
 
+export function areSameMinute(timestamp1: number, timestamp2: number): boolean {
+  const date1 = new Date(timestamp1);
+  const date2 = new Date(timestamp2);
+
+  const hour1 = date1.getHours();
+  const minute1 = date1.getMinutes();
+  const hour2 = date2.getHours();
+  const minute2 = date2.getMinutes();
+
+  return hour1 === hour2 && minute1 == minute2;
+}
+
+export function formatTimestamp(milliseconds: number): string {
+  const date = new Date(milliseconds);
+  const hours = ("0" + date.getHours()).slice(-2);
+  const minutes = ("0" + date.getMinutes()).slice(-2);
+  const seconds = ("0" + date.getSeconds()).slice(-2);
+  const day = ("0" + date.getDate()).slice(-2);
+  const month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based
+  const year = date.getFullYear();
+
+  return `${hours}:${minutes}:${seconds} ${day}/${month}/${year}`;
+}

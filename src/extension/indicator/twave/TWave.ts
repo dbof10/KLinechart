@@ -1,4 +1,4 @@
-import { Indicator, IndicatorTemplate } from "../../../component/Indicator";
+import { Indicator, IndicatorAlertCallback, IndicatorTemplate } from "../../../component/Indicator";
 import KLineData from "../../../common/KLineData";
 import { getBarByIndex } from "./utils/TWaveHelper";
 import { Bar } from "./model/Bar";
@@ -29,6 +29,10 @@ import {
   SIGNAL_UPTHRUST,
 } from "./utils/TWaveAlgo";
 import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
+import Nullable from "../../../common/Nullable";
+import { areSameMinute, formatTimestamp } from "../../../utils/TimeUtils";
+import { Alert } from "../Alert";
+import { formatDate } from "../../../repository/utils/DateUtils";
 
 const SwingLength = 2;
 
@@ -43,7 +47,8 @@ interface TWave {
   textPosition?: TextPosition;
 }
 
-function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], closes: number[]): TWave[] {
+function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], closes: number[],
+                  alertCallback: Nullable<IndicatorAlertCallback>): TWave[] {
 
   let prevDirectionalBarIndex: number = INDEX_START_SEARCH;
   let prevDirectionalBarType: BarType = BarType.None;
@@ -280,7 +285,6 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
             //   DrawDebugSwingStartBar(i, "Do4", time, low);
           }
         }
-
       }
     }
   }
@@ -293,6 +297,15 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
       twave.textPosition = e.textPosition;
       const signal1 = signalToString(e.algo);
       const signal2 = signalToString(e.algo2);
+      if(signal1.length > 0 || signal2.length > 0) {
+        const current = Date.now();
+        if(areSameMinute(e.timestamp, current)){
+          const alert: Alert = {
+            message: `Alert signal ${signal1} ${signal2} at ${formatTimestamp(e.timestamp)}`
+          }
+          alertCallback(alert)
+        }
+      }
       twave.algo = signal1;
       twave.secondAlgo = signal2;
     }
@@ -328,7 +341,7 @@ const TWave: IndicatorTemplate<TWave> = {
   name: "TWA",
   shortName: "TWave",
   isOverlay: true,
-  calc: (dataList: KLineData[], _: Indicator<TWave>) => {
+  calc: (dataList: KLineData[], _: Indicator<TWave>, alertCallback: Nullable<IndicatorAlertCallback<Alert>>) => {
 
     const extendedData: TWaveKLineData[] = [];
     const highs: number[] = [];
@@ -351,7 +364,7 @@ const TWave: IndicatorTemplate<TWave> = {
       lows.push(e.low);
       closes.push(e.close);
     });
-    return onRender(extendedData, highs, lows, closes);
+    return onRender(extendedData, highs, lows, closes, alertCallback);
   },
   draw: ({
            ctx,
