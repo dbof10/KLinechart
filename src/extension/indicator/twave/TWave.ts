@@ -32,7 +32,7 @@ import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
 import Nullable from "../../../common/Nullable";
 import { areSameMinute, formatTimestamp } from "../../../utils/TimeUtils";
 import { Alert } from "../Alert";
-import { formatDate } from "../../../repository/utils/DateUtils";
+import { generateRandomUUID } from "../../../utils/UUID";
 
 const SwingLength = 2;
 
@@ -297,13 +297,14 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
       twave.textPosition = e.textPosition;
       const signal1 = signalToString(e.algo);
       const signal2 = signalToString(e.algo2);
-      if(signal1.length > 0 || signal2.length > 0) {
+      if (signal1.length > 0 || signal2.length > 0) {
         const current = Date.now();
-        if(areSameMinute(e.timestamp, current)){
+        if (areSameMinute(e.timestamp, current)) {
           const alert: Alert = {
-            message: `Alert signal ${signal1} ${signal2} at ${formatTimestamp(e.timestamp)}`
-          }
-          alertCallback(alert)
+            id: e.timestamp.toString() + "_" + generateRandomUUID(),
+            message: `Alert signal ${signal1} ${signal2} at ${formatTimestamp(e.timestamp)}`,
+          };
+          alertCallback(alert);
         }
       }
       twave.algo = signal1;
