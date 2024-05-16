@@ -36,8 +36,7 @@ import { getStyles } from "../extension/styles/index";
 
 import type Chart from "../Chart";
 import { defaultSettings, TradingSettings } from "../model/TradingSettings";
-import { areEqualInSameMinute, areSameHourAndMinute, isAfterMinute } from "../utils/TimeUtils";
-import { duration } from "happy-dom/lib/PropertySymbol";
+import { areSameHourAndMinute, isAfterMinute } from "../utils/TimeUtils";
 
 export default class ChartStore {
   /**
@@ -136,7 +135,7 @@ export default class ChartStore {
   private _visibleDataList: VisibleData[] = []
 
   private _tradingSettings: TradingSettings = defaultSettings;
-  private _timeFrameDuration = 0;
+  private _timeFrameDuration = -1;
 
   constructor (chart: Chart, options?: Options) {
     this._chart = chart
@@ -369,6 +368,10 @@ export default class ChartStore {
 
   setTimeframeDuration(duration: number): void {
     this._timeFrameDuration = duration
+  }
+
+  getTimeframeDuration(): number {
+    return this._timeFrameDuration
   }
 
   async addIntradayData(data: KLineData): Promise<void> {

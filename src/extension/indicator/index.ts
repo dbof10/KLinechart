@@ -16,7 +16,6 @@ import type Nullable from '../../common/Nullable'
 
 import IndicatorImp, { type IndicatorTemplate, type IndicatorConstructor } from '../../component/Indicator'
 
-import averagePrice from './averagePrice'
 import awesomeOscillator from './awesomeOscillator'
 import bias from './bias'
 import bollingerBands from './bollingerBands'

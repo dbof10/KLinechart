@@ -45,7 +45,7 @@ export const VWAP: IndicatorTemplate<VWAP> = {
 
       const vwap: VWAP = {};
 
-      let hl3 = ((e.high + e.low + e.close) / 3);
+      const hl3 = ((e.high + e.low + e.close) / 3);
 
       if (e.isStartOfSession) {
         iCumVolume = e.volume;

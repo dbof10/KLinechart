@@ -45,6 +45,7 @@ export default class CandleWidget extends IndicatorWidget {
     const candleStyles = this.getPane().getChart().getStyles().candle
     const chartStore = this.getPane().getChart().getChartStore();
     const settings= chartStore.getTradingSettings();
+    const timeframe = chartStore.getTimeframeDuration()
 
     if (candleStyles.type !== CandleType.Area) {
       this._candleBarView.draw(ctx)
@@ -54,7 +55,7 @@ export default class CandleWidget extends IndicatorWidget {
       this._candleAreaView.draw(ctx)
     }
     this._candleLastPriceLineView.draw(ctx)
-    if(settings.drawSessionBreak) {
+    if(settings.drawSessionBreak && timeframe > 0) {
       this._sessionBreakView.draw(ctx);
     }
   }

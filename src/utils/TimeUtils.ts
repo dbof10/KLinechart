@@ -1,9 +1,6 @@
-
-
-
 export function isSpecificHour(epochMilliseconds: number, hour: string): boolean {
   const date = new Date(epochMilliseconds);
-  const [hourStr, minuteStr, secondStr] = hour.split(':').map(str => parseInt(str, 10));
+  const [hourStr, minuteStr, secondStr] = hour.split(":").map(str => parseInt(str, 10));
   return date.getHours() === hourStr && date.getMinutes() === minuteStr;
 }
 
@@ -20,7 +17,7 @@ export function areSameDay(epochMilliseconds1: number, epochMilliseconds2: numbe
 
 
 export function areSameHourAndMinute(timestamp1: number, timestamp2: number, timeframe: number): boolean {
-  const timeframeInMinute = timeframe / (60*1000);
+  const timeframeInMinute = timeframe / (60 * 1000);
   const date1 = new Date(timestamp1);
   const date2 = new Date(timestamp2);
 
@@ -33,7 +30,7 @@ export function areSameHourAndMinute(timestamp1: number, timestamp2: number, tim
 }
 
 export function isAfterMinute(timestamp1: number, timestamp2: number, timeframe: number): boolean {
-  const timeframeInMinute = timeframe / (60*1000);
+  const timeframeInMinute = timeframe / (60 * 1000);
 
   const date1 = new Date(timestamp1);
   const date2 = new Date(timestamp2);
@@ -49,19 +46,23 @@ export function isAfterMinute(timestamp1: number, timestamp2: number, timeframe:
 }
 
 export function timeFrameToMilliseconds(timeframe: string): number {
-  switch (timeframe) {
-    case '1M':
-      return 60 * 1000; // 1 minute
-    case '3M':
-      return 3 * 60 * 1000; // 3 minutes
-    case '15M':
-      return 15 * 60 * 1000; // 15 minutes
-    case '1H':
-      return 60 * 60 * 1000; // 1 hour
-    case '4H':
-      return 4 * 60 * 60 * 1000; // 4 hours
-    default:
-      return 0;
+  if (timeframe.endsWith("M") || timeframe.endsWith("H")) {
+    switch (timeframe) {
+      case "1M":
+        return 60 * 1000; // 1 minute
+      case "3M":
+        return 3 * 60 * 1000; // 3 minutes
+      case "15M":
+        return 15 * 60 * 1000; // 15 minutes
+      case "1H":
+        return 60 * 60 * 1000; // 1 hour
+      case "4H":
+        return 4 * 60 * 60 * 1000; // 4 hours
+      default:
+        return 0;
+    }
+  } else {
+    return -1;
   }
 }
 

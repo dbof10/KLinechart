@@ -28,8 +28,6 @@ import {
 interface Vol {
   volume?: number
   ma1?: number
-  ma2?: number
-  ma3?: number
 }
 
 function getVolumeFigure (): IndicatorFigure<Vol> {
@@ -57,14 +55,12 @@ const volume: IndicatorTemplate<Vol> = {
   name: 'VOL',
   shortName: 'VOL',
   series: IndicatorSeries.Volume,
-  calcParams: [5, 10, 20],
+  calcParams: [20],
   shouldFormatBigNumber: true,
   precision: 0,
   minValue: 0,
   figures: [
-    { key: 'ma1', title: 'MA5: ', type: 'line' },
-    { key: 'ma2', title: 'MA10: ', type: 'line' },
-    { key: 'ma3', title: 'MA20: ', type: 'line' },
+    { key: 'ma1', title: 'MA20: ', type: 'line' },
     getVolumeFigure()
   ],
   regenerateFigures: (params: any[]) => {
