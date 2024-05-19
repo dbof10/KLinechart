@@ -34,6 +34,7 @@ interface FiguresResult {
 
 export interface YAxis extends Axis {
   isFromZero: () => boolean
+  isInCandle: () => boolean
   resetRange(): () => void
 }
 
