@@ -1,6 +1,5 @@
 export interface TradingSettings  {
   drawSessionBreak: boolean,
-  maxDaysToLoad: number,
   tradingHours: TradingHours
 }
 
@@ -19,7 +18,6 @@ type TradingHours = {
 
 export const defaultSettings: TradingSettings = {
   drawSessionBreak: true,
-  maxDaysToLoad: 10,
   tradingHours: {
     morningSession: {
       open: "09:00:00",
