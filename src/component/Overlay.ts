@@ -28,6 +28,7 @@ import type TimeScaleStore from '../store/TimeScaleStore'
 
 import { type XAxis } from './XAxis'
 import { type YAxis } from './YAxis'
+import KLineData from '../common/KLineData'
 
 export enum OverlayMode {
   Normal = 'normal',
@@ -629,7 +630,7 @@ export default abstract class OverlayImp implements Overlay {
     return this.currentStep === OVERLAY_DRAW_STEP_START
   }
 
-  eventMoveForDrawing(point: Partial<Point>): void {
+  eventMoveForDrawing(point: Partial<Point>, dataList: KLineData[]): void {
     const pointIndex = this.currentStep - 1;
     const newPoint: Partial<Point> = {};
 
@@ -656,9 +657,17 @@ export default abstract class OverlayImp implements Overlay {
     } else {
       if (isNumber(point.timestamp)) {
         newPoint.timestamp = point.timestamp;
+      }else {
+        if(pointIndex > 0) {
+          newPoint.timestamp = dataList[dataList.length - 1].timestamp;
+        }
       }
       if (isNumber(point.dataIndex)) {
         newPoint.dataIndex = point.dataIndex;
+      }else {
+          if(pointIndex > 0) {
+            newPoint.dataIndex = dataList.length - 1;
+          }
       }
     }
 

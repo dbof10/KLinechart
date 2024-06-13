@@ -41,6 +41,7 @@ import type DrawWidget from '../widget/DrawWidget'
 import type DrawPane from '../pane/DrawPane'
 
 import View from './View'
+import KLineData from '../common/KLineData'
 
 export default class OverlayView<C extends Axis = YAxis> extends View<C> {
   constructor (widget: DrawWidget<DrawPane<C>>) {
@@ -52,6 +53,7 @@ export default class OverlayView<C extends Axis = YAxis> extends View<C> {
     const pane = this.getWidget().getPane()
     const paneId = pane.getId()
     const overlayStore = pane.getChart().getChartStore().getOverlayStore()
+
     document.addEventListener('keydown', (event) => {
       if (event.shiftKey) {
         const progressInstanceInfo = overlayStore.getProgressInstanceInfo()
@@ -88,7 +90,8 @@ export default class OverlayView<C extends Axis = YAxis> extends View<C> {
         const index = overlay.points.length - 1
         const key = `${OVERLAY_FIGURE_KEY_PREFIX}point_${index}`
         if (overlay.isDrawing() && progressInstancePaneId === paneId) {
-          overlay.eventMoveForDrawing(this._coordinateToPoint(progressInstanceInfo.instance, event))
+          const dataList : KLineData[] = pane.getChart().getChartStore().getDataList();
+          overlay.eventMoveForDrawing(this._coordinateToPoint(progressInstanceInfo.instance, event), dataList)
           overlay.onDrawing?.({ overlay, figureKey: key, figureIndex: index, ...event })
         }
         return this._figureMouseMoveEvent(
@@ -115,7 +118,8 @@ export default class OverlayView<C extends Axis = YAxis> extends View<C> {
         const index = overlay.points.length - 1
         const key = `${OVERLAY_FIGURE_KEY_PREFIX}point_${index}`
         if (overlay.isDrawing() && progressInstancePaneId === paneId) {
-          overlay.eventMoveForDrawing(this._coordinateToPoint(overlay, event))
+          const dataList : KLineData[] = pane.getChart().getChartStore().getDataList();
+          overlay.eventMoveForDrawing(this._coordinateToPoint(overlay, event), dataList)
           overlay.onDrawing?.({ overlay, figureKey: key, figureIndex: index, ...event })
           overlay.nextStep()
           if (!overlay.isDrawing()) {
