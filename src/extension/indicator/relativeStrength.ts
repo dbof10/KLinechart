@@ -72,6 +72,10 @@ function processDataForSameSize(chartData: KLineData[], marketData: KLineData[])
 
 function stretchShorterList(longerList: KLineData[], shorterList: KLineData[]): KLineData[] {
 
+  console.log("long " + longerList.length);
+
+  console.log("short " + shorterList.length);
+
   const newShortArray: KLineData[] = [];
 
   const firstLongDate = formatDate(longerList[0].timestamp);
@@ -127,7 +131,7 @@ const relativeStrength: IndicatorTemplate<RS> = {
     const params = indicator.calcParams;
 
     if (dataList.length > 0) {
-      const marketData = await fetchData("VN30F1M", dataList[0].timestamp, dataList[dataList.length - 1].timestamp);
+      const marketData = await fetchData("HNX:VN30F1M", dataList[0].timestamp, dataList[dataList.length - 1].timestamp);
       if (marketData.length > 0) {
         const data = processDataForSameSize(dataList, marketData);
         return calcRS(data[0], data[1]);

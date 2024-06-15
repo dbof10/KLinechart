@@ -38,18 +38,14 @@ export interface CandleBarOptions {
 function getBarColor(index: number, totalData: KLineData[], styles: CandleBarColor): string[] {
   const colors: string[] = [];
   if (index < 2) {
-    if (close > open) {
+    if (close >= open) {
       colors[0] = styles.upColor;
       colors[1] = styles.upBorderColor;
       colors[2] = styles.upWickColor;
-    } else if (close < open) {
+    } else  {
       colors[0] = styles.downColor;
       colors[1] = styles.downBorderColor;
       colors[2] = styles.downWickColor;
-    } else {
-      colors[0] = styles.noChangeColor;
-      colors[1] = styles.noChangeBorderColor;
-      colors[2] = styles.noChangeWickColor;
     }
   } else {
 

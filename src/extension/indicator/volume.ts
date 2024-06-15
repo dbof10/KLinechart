@@ -14,8 +14,7 @@
 
 import type KLineData from "../../common/KLineData";
 import { type IndicatorStyle } from "../../common/Styles";
-import { formatValue } from "../../common/utils/format";
-import { isValid } from "../../common/utils/typeChecks";
+
 
 import {
   type Indicator,
@@ -24,10 +23,12 @@ import {
   IndicatorSeries,
   type IndicatorTemplate,
 } from "../../component/Indicator";
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../utils/ColorConstant";
 
 interface Vol {
   volume?: number
   ma1?: number
+  color: string
 }
 
 function getVolumeFigure (): IndicatorFigure<Vol> {
@@ -37,16 +38,9 @@ function getVolumeFigure (): IndicatorFigure<Vol> {
     type: 'bar',
     baseValue: 0,
     styles: (data: IndicatorFigureStylesCallbackData<Vol>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
-      const kLineData = data.current.kLineData
-      let color = formatValue(indicator.styles, 'bars[0].noChangeColor', (defaultStyles.bars)[0].noChangeColor)
-      if (isValid(kLineData)) {
-        if (kLineData.close > kLineData.open) {
-          color = formatValue(indicator.styles, 'bars[0].upColor', (defaultStyles.bars)[0].upColor)
-        } else if (kLineData.close < kLineData.open) {
-          color = formatValue(indicator.styles, 'bars[0].downColor', (defaultStyles.bars)[0].downColor)
-        }
-      }
-      return { color: color as string }
+      const color = data.current.indicatorData?.color
+
+      return { color }
     }
   }
 }
@@ -75,7 +69,37 @@ const volume: IndicatorTemplate<Vol> = {
     const volSums: number[] = []
     return dataList.map((kLineData: KLineData, i: number) => {
       const volume = kLineData.volume ?? 0
-      const vol: Vol = { volume }
+      let color: string;
+
+      if (i < 2) {
+        if (kLineData.close >= kLineData.open) {
+          color = COLOR_DEMAND;
+
+        } else {
+          color = COLOR_SUPPLY;
+        }
+      } else {
+
+        const itemAtI: KLineData = dataList[i];
+        const itemAtMinus1: KLineData = dataList[i - 1];
+        const itemAtMinus2: KLineData = dataList[i - 2];
+
+        if (itemAtI.close === itemAtMinus1.close) {
+          if (itemAtMinus1.close > itemAtMinus2.close) {
+           color = COLOR_DEMAND;
+          } else {
+           color = COLOR_SUPPLY;
+          }
+        } else if (itemAtI.close > itemAtMinus1.close) {
+          color = COLOR_DEMAND;
+        } else {
+          color = COLOR_SUPPLY;
+        }
+      }
+
+      const vol: Vol = { volume, color }
+
+
       params.forEach((p, index) => {
         volSums[index] = (volSums[index] ?? 0) + volume
         if (i >= p - 1) {
