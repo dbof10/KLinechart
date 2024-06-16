@@ -54,30 +54,6 @@ export default class OverlayView<C extends Axis = YAxis> extends View<C> {
     const paneId = pane.getId()
     const overlayStore = pane.getChart().getChartStore().getOverlayStore()
 
-    document.addEventListener('keydown', (event) => {
-      if (event.shiftKey) {
-        const progressInstanceInfo = overlayStore.getProgressInstanceInfo()
-        const { instance } = overlayStore.getPressedInstanceInfo()
-        if (progressInstanceInfo !== null) {
-          progressInstanceInfo.instance.setShiftKeyPressed(true)
-        }
-        else if (instance !== null) {
-          instance.setShiftKeyPressed(true)
-        }
-      }
-    });
-    document.addEventListener('keyup', (event) => {
-      if (!event.shiftKey) {
-        const progressInstanceInfo = overlayStore.getProgressInstanceInfo()
-        const { instance } = overlayStore.getPressedInstanceInfo();
-        if (progressInstanceInfo !== null) {
-          progressInstanceInfo.instance.setShiftKeyPressed(false)
-        }
-       else if (instance !== null) {
-          instance.setShiftKeyPressed(false)
-        }
-      }
-    });
     this.registerEvent('mouseMoveEvent', (event: MouseTouchEvent) => {
       const progressInstanceInfo = overlayStore.getProgressInstanceInfo()
       if (progressInstanceInfo !== null) {
@@ -195,7 +171,8 @@ export default class OverlayView<C extends Axis = YAxis> extends View<C> {
           if (!(instance.onPressedMoving?.({ overlay: instance, figureIndex, figureKey, ...event }) ?? false)) {
             const point = this._coordinateToPoint(instance, event)
             if (figureType === EventOverlayInfoFigureType.Point) {
-              instance.eventPressedPointMove(point, figureIndex)
+              const dataList : KLineData[] = pane.getChart().getChartStore().getDataList();
+              instance.eventPressedPointMove(point, figureIndex, dataList)
             } else {
               instance.eventPressedOtherMove(point, this.getWidget().getPane().getChart().getChartStore().getTimeScaleStore())
             }

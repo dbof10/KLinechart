@@ -29,6 +29,7 @@ import type TimeScaleStore from '../store/TimeScaleStore'
 import { type XAxis } from './XAxis'
 import { type YAxis } from './YAxis'
 import KLineData from '../common/KLineData'
+import { keyboardTracker } from '../hotkey/KeyboardEventTracker'
 
 export enum OverlayMode {
   Normal = 'normal',
@@ -340,7 +341,6 @@ export default abstract class OverlayImp implements Overlay {
 
   private _prevPressedPoint: Nullable<Partial<Point>> = null;
   private _prevPressedPoints: Array<Partial<Point>> = [];
-  private _isShiftPressed = false;
 
   constructor (overlay: OverlayTemplate) {
     const {
@@ -634,6 +634,12 @@ export default abstract class OverlayImp implements Overlay {
     const pointIndex = this.currentStep - 1;
     const newPoint: Partial<Point> = {};
 
+    const isShiftPressed = keyboardTracker.checkShiftKeyState();
+
+    if(isNumber(point.timestamp) === false) {
+      return;
+    }
+
     if (pointIndex === 2 && CONSTRAINT_OVERLAY.includes(this.name)) {
 
       if (isNumber(point.timestamp)) {
@@ -672,7 +678,7 @@ export default abstract class OverlayImp implements Overlay {
     }
 
     if (pointIndex === 1 && SHIFT_SUPPORT.includes(this.name)) {
-      if (this._isShiftPressed) {
+      if (isShiftPressed) {
         newPoint.value = this.points[0].value;
       } else {
         if (isNumber(point.value)) {
@@ -695,7 +701,9 @@ export default abstract class OverlayImp implements Overlay {
     });
   }
 
-  eventPressedPointMove(point: Partial<Point>, pointIndex: number): void {
+  eventPressedPointMove(point: Partial<Point>, pointIndex: number, data: KLineData[]): void {
+
+    const isShiftPressed = keyboardTracker.checkShiftKeyState();
 
 
     if (pointIndex === 2 && CONSTRAINT_OVERLAY.includes(this.name)) {
@@ -714,15 +722,20 @@ export default abstract class OverlayImp implements Overlay {
       }
 
     } else {
-      if (isNumber(point.dataIndex)) {
+      if (isNumber(point.dataIndex) && isNumber(point.timestamp)) {
         this.points[pointIndex].dataIndex = point.dataIndex;
         this.points[pointIndex].timestamp = point.timestamp;
+      }else {
+
+          this.points[pointIndex].dataIndex = data.length - 1;
+          this.points[pointIndex].timestamp = data[data.length - 1].timestamp;
+
       }
     }
 
 
     if (pointIndex === 1 && SHIFT_SUPPORT.includes(this.name)) {
-      if (this._isShiftPressed) {
+      if (isShiftPressed) {
         this.points[pointIndex].value = this.points[0].value;
       } else {
         if (isNumber(point.value)) {
@@ -732,6 +745,8 @@ export default abstract class OverlayImp implements Overlay {
     } else {
       if (isNumber(point.value)) {
         this.points[pointIndex].value = point.value;
+      } else {
+          this.points[pointIndex].dataIndex = data.length - 1;
       }
     }
 
@@ -776,9 +791,7 @@ export default abstract class OverlayImp implements Overlay {
     }
   }
 
-  setShiftKeyPressed(isPressed: boolean): void {
-    this._isShiftPressed = isPressed;
-  }
+
 
   static extend (template: OverlayTemplate): OverlayInnerConstructor {
     class Custom extends OverlayImp {
