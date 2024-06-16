@@ -127,6 +127,8 @@ export default class IndicatorView extends CandleBarView {
               }
             })
             eachFigures(dataList, indicator, dataIndex, defaultStyles, (figure: IndicatorFigure, figureStyles: IndicatorFigureStyle, figureIndex: number) => {
+
+
               if (isValid(currentIndicatorData[figure.key])) {
                 const valueY = currentCoordinate[figure.key]
                 let attrs = figure.attrs?.({
@@ -136,7 +138,8 @@ export default class IndicatorView extends CandleBarView {
                   xAxis,
                   yAxis
                 })
-                if (!isValid<IndicatorFigureAttrs>(attrs)) {
+
+
                   switch (figure.type) {
                     case 'circle': {
                       attrs = { x, y: valueY, r: halfGapBar }
@@ -144,6 +147,13 @@ export default class IndicatorView extends CandleBarView {
                     }
                     case 'rect':
                     case 'bar': {
+                      let barWidth : number;
+                      if(attrs?.size) {
+                        barWidth = attrs.size;
+                      }else {
+                        barWidth = gapBar;
+                      }
+
                       const baseValue = figure.baseValue ?? yAxis.getRange().from
                       const baseValueY = yAxis.convertToPixel(baseValue)
                       let height = Math.abs(baseValueY - (valueY as number))
@@ -159,7 +169,7 @@ export default class IndicatorView extends CandleBarView {
                       attrs = {
                         x: x - halfGapBar,
                         y,
-                        width: gapBar,
+                        width: barWidth,
                         height
                       }
                       break
@@ -181,7 +191,8 @@ export default class IndicatorView extends CandleBarView {
                     }
                     default: { break }
                   }
-                }
+
+
                 const type = figure.type!
                 if (isValid<IndicatorFigureAttrs>(attrs) && type !== 'line') {
                   this.createFigure({

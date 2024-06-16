@@ -22,6 +22,7 @@ import {
   type IndicatorFigureStylesCallbackData,
   IndicatorSeries,
   type IndicatorTemplate,
+  IndicatorFigureAttrsCallbackParams,
 } from "../../component/Indicator";
 import { COLOR_DEMAND, COLOR_SUPPLY } from "../../utils/ColorConstant";
 
@@ -39,7 +40,6 @@ function getVolumeFigure (): IndicatorFigure<Vol> {
     baseValue: 0,
     styles: (data: IndicatorFigureStylesCallbackData<Vol>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
       const color = data.current.indicatorData?.color
-
       return { color }
     }
   }

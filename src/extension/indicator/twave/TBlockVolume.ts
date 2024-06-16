@@ -3,6 +3,7 @@ import { IndicatorStyle } from "../../../common/Styles";
 import {
   Indicator,
   IndicatorFigure,
+  IndicatorFigureAttrsCallbackParams,
   IndicatorFigureStylesCallbackData, IndicatorSeries,
   IndicatorTemplate,
 } from "../../../component/Indicator";
@@ -23,6 +24,11 @@ function getVolumeFigure(): IndicatorFigure<TBlockVol> {
       const indi = data.current.indicatorData;
       return { color: indi?.color };
     },
+    attrs:(params: IndicatorFigureAttrsCallbackParams<TBlockVol>) => {
+      return {
+        size: 10
+      }
+    }
   };
 }
 

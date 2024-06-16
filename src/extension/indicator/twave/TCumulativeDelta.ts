@@ -5,6 +5,7 @@ import { IndicatorStyle } from "../../../common/Styles";
 import {
   Indicator,
   IndicatorFigure,
+  IndicatorFigureAttrsCallbackParams,
   IndicatorFigureStylesCallbackData, IndicatorSeries,
   IndicatorTemplate,
 } from "../../../component/Indicator";
@@ -34,7 +35,7 @@ function getVolumeFigure(): IndicatorFigure<CumulativeDelta> {
     baseValue: 0,
     styles: (data: IndicatorFigureStylesCallbackData<CumulativeDelta>, indicator: Indicator, defaultStyles: IndicatorStyle) => {
       return { color: data.current.indicatorData?.color };
-    },
+    }
   };
 }
 
