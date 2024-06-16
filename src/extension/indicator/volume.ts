@@ -28,7 +28,6 @@ import { COLOR_DEMAND, COLOR_SUPPLY } from "../../utils/ColorConstant";
 
 interface Vol {
   volume?: number
-  ma1?: number
   color: string
 }
 
@@ -49,24 +48,13 @@ const volume: IndicatorTemplate<Vol> = {
   name: 'VOL',
   shortName: 'VOL',
   series: IndicatorSeries.Volume,
-  calcParams: [20],
   shouldFormatBigNumber: true,
   precision: 0,
   minValue: 0,
   figures: [
-    { key: 'ma1', title: 'MA20: ', type: 'line' },
     getVolumeFigure()
   ],
-  regenerateFigures: (params: any[]) => {
-    const figures: Array<IndicatorFigure<Vol>> = params.map((p: number, i: number) => {
-      return { key: `ma${i + 1}`, title: `MA${p}: `, type: 'line' }
-    })
-    figures.push(getVolumeFigure())
-    return figures
-  },
   calc: (dataList: KLineData[], indicator: Indicator<Vol>) => {
-    const { calcParams: params, figures } = indicator
-    const volSums: number[] = []
     return dataList.map((kLineData: KLineData, i: number) => {
       const volume = kLineData.volume ?? 0
       let color: string;
@@ -99,14 +87,6 @@ const volume: IndicatorTemplate<Vol> = {
 
       const vol: Vol = { volume, color }
 
-
-      params.forEach((p, index) => {
-        volSums[index] = (volSums[index] ?? 0) + volume
-        if (i >= p - 1) {
-          vol[figures[index].key] = volSums[index] / p
-          volSums[index] -= (dataList[i - (p - 1)].volume ?? 0)
-        }
-      })
       return vol
     })
   }

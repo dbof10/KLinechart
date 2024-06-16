@@ -33,8 +33,8 @@ import Nullable from "../../../common/Nullable";
 import { areSameMinute, formatTimestamp } from "../../../utils/TimeUtils";
 import { Alert } from "../Alert";
 import { generateRandomUUID } from "../../../utils/UUID";
+import { TWaveConfiguration } from "./model/TWaveConfiguration";
 
-const SwingLength = 2;
 
 interface TWave {
   low?: number;
@@ -48,7 +48,10 @@ interface TWave {
 }
 
 function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], closes: number[],
+                  config: TWaveConfiguration,
                   alertCallback: Nullable<IndicatorAlertCallback>): TWave[] {
+
+  const SwingLength = config.swingReversal;
 
   let prevDirectionalBarIndex: number = INDEX_START_SEARCH;
   let prevDirectionalBarType: BarType = BarType.None;
@@ -342,12 +345,19 @@ const TWave: IndicatorTemplate<TWave> = {
   name: "TWA",
   shortName: "TWave",
   isOverlay: true,
-  calc: (dataList: KLineData[], _: Indicator<TWave>, alertCallback: Nullable<IndicatorAlertCallback<Alert>>) => {
+  calcParams: [2],
+  calc: (dataList: KLineData[],  indicator : Indicator<TWave>, alertCallback: Nullable<IndicatorAlertCallback<Alert>>) => {
 
+    const { calcParams: params } = indicator
+    const swingReversal = params[0];
     const extendedData: TWaveKLineData[] = [];
     const highs: number[] = [];
     const lows: number[] = [];
     const closes: number[] = [];
+
+    const config : TWaveConfiguration = {
+       swingReversal
+    }
 
     dataList.forEach((e: KLineData) => {
       const item = {
@@ -365,7 +375,7 @@ const TWave: IndicatorTemplate<TWave> = {
       lows.push(e.low);
       closes.push(e.close);
     });
-    return onRender(extendedData, highs, lows, closes, alertCallback);
+    return onRender(extendedData, highs, lows, closes, config, alertCallback);
   },
   draw: ({
            ctx,

@@ -87,8 +87,8 @@ const TBlockVolume: IndicatorTemplate<TBlockVol> = {
       for (let j = indexOfNewTrend; j <= i; j++) {
         vol += dataList[j].volume;
 
-        const bid = 0;
-        const ask = 0;
+        const bid = dataList[j].bidVol!;
+        const ask = dataList[j].askVol!;
         // getPsuedoDelta(j, bid, ask, open, high, low, close, volume);
 
         bidVol += bid;
@@ -111,7 +111,7 @@ const TBlockVolume: IndicatorTemplate<TBlockVol> = {
         }
 
         volSums[j] = {
-          volume: volAt,
+          volume: (askVol - bidVol),
           color: colorAt,
         };
 
