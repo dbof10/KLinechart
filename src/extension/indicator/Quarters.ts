@@ -1,7 +1,6 @@
 import KLineData from "../../common/KLineData";
 import { Indicator, IndicatorAlertCallback, IndicatorTemplate } from "../../component/Indicator";
-import { Nullable } from "vitest";
-
+import Nullable from "../../common/Nullable";
 
 interface Quarter {
   index: number;
