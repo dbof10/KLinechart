@@ -42,8 +42,6 @@ import tripleExponentiallySmoothedAverage from './tripleExponentiallySmoothedAve
 import volume from './volume'
 import volumeRatio from './volumeRatio'
 import williamsR from './williamsR'
-import relativeStrength from "./relativeStrength";
-import openInterest from "./openInterest";
 import TWaveVolume from "./twave/TWaveVolume";
 import TBlockVolume from "./twave/TBlockVolume";
 import Tpace from "./twave/Tpace";
@@ -65,7 +63,7 @@ const extensions = [
   movingAverage, movingAverageConvergenceDivergence, onBalanceVolume, priceAndVolumeTrend,
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
-  relativeStrength, openInterest, TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
+  TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
   YesterdayStructure, VWAP, averageTrueRange, Quarters
 ]
 
@@ -97,8 +95,6 @@ const mapName = {
   "VOL": "Volume",
   "VR": "Volume Ratio",
   "WR": "Williams %R",
-  "RS": "Relative Strength",
-  "OI": "Open Interest",
   "TW": "TWave Histogram",
   "TB": "TBlock Histogram",
   "TPA": "Tpace",

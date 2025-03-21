@@ -11,6 +11,12 @@ interface BidAskOscillator {
   ask?: number;
 }
 
+interface BidAsk {
+  bid: number,
+  ask: number
+}
+
+
 function calculateBidAsk(index: number, klineData: KLineData): BidAsk {
   const startIndex: number = index - Period;
   let cumbid = 0;
