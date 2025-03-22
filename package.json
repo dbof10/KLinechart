@@ -1,7 +1,7 @@
 {
   "name": "klinecharts",
   "version": "9.8.8",
-  "description": "Lightweight k-line chart built with html5 canvas",
+  "description": "Enhanced k-line chart built with html5 canvas",
   "main": "./dist/index.cjs",
   "module": "./dist/index.esm.js",
   "unpkg": "./dist/umd/klinecharts.min.js",
@@ -16,12 +16,8 @@
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/klinecharts/KLineChart"
+    "url": "https://github.com/dbof10/KLinechart"
   },
-  "bugs": {
-    "url": "https://github.com/klinecharts/KLineChart/issues"
-  },
-  "homepage": "https://klinecharts.com/",
   "keywords": [
     "k-line",
     "time-line",
@@ -34,7 +30,7 @@
     "chart",
     "canvas"
   ],
-  "author": "liihuu",
+  "author": "ti bull",
   "license": "Apache-2.0",
   "scripts": {
     "lint": "eslint src/**/*.ts",
