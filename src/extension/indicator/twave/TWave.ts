@@ -40,7 +40,7 @@ interface TWave {
   low?: number;
   high?: number;
   totalVolume?: string;
-  totalDeltaVolume?: number;
+  totalDeltaVolume?: string;
   algo?: string;
   secondAlgo?: string;
   index: string;
@@ -341,23 +341,72 @@ function signalToString(value?: number): string {
   }
 }
 
+function toWaveConfiguration(params: any[]): TWaveConfiguration {
+  const swingReversal = Number(params[0]) || 2; // default to 3 if not valid
+  const liteMode = Boolean(params[1]);
+
+  return {
+    swingReversal,
+    liteMode,
+  };
+}
+
+function drawLabelBox(
+  ctx: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  width: number,
+  height: number,
+  label: 'BUY' | 'SELL',
+  radius: number = 4
+) {
+  const isBuy = label === 'BUY';
+
+  const left = x - width / 2; // center align horizontally
+
+  // Rounded rectangle
+  ctx.beginPath();
+  ctx.moveTo(left + radius, y);
+  ctx.lineTo(left + width - radius, y);
+  ctx.quadraticCurveTo(left + width, y, left + width, y + radius);
+  ctx.lineTo(left + width, y + height - radius);
+  ctx.quadraticCurveTo(left + width, y + height, left + width - radius, y + height);
+  ctx.lineTo(left + radius, y + height);
+  ctx.quadraticCurveTo(left, y + height, left, y + height - radius);
+  ctx.lineTo(left, y + radius);
+  ctx.quadraticCurveTo(left, y, left + radius, y);
+  ctx.closePath();
+
+  // Fill box
+  ctx.fillStyle = isBuy ? '#00c853' : '#d50000';
+  ctx.fill();
+
+  // Draw label text
+  ctx.fillStyle = 'white';
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillText(label, x, y + height / 2); // x is still the center
+}
+
+
+function drawLiteMode(ctx: CanvasRenderingContext2D, x: number, y: number,  label: 'BUY' | 'SELL') {
+  drawLabelBox(ctx,x,y, 40, 20, label);
+}
 const TWave: IndicatorTemplate<TWave> = {
   name: "TWA",
   shortName: "TWave",
   isOverlay: true,
-  calcParams: [2],
+  calcParams: [2, 0],
   calc: (dataList: KLineData[],  indicator : Indicator<TWave>, alertCallback: Nullable<IndicatorAlertCallback<Alert>>) => {
 
     const { calcParams: params } = indicator
-    const swingReversal = params[0];
+    const config : TWaveConfiguration = toWaveConfiguration(params);
+
     const extendedData: TWaveKLineData[] = [];
     const highs: number[] = [];
     const lows: number[] = [];
     const closes: number[] = [];
-
-    const config : TWaveConfiguration = {
-       swingReversal
-    }
 
     dataList.forEach((e: KLineData) => {
       const item = {
@@ -391,38 +440,56 @@ const TWave: IndicatorTemplate<TWave> = {
     ctx.font = `${fontSize}px Helvetica Neue`;
     ctx.textAlign = "center";
     const result = indicator.result;
+    const { calcParams: params } = indicator
+    const config : TWaveConfiguration = toWaveConfiguration(params);
+
     for (let i = from; i < to; i++) {
       const data = result[i];
       const x = xAxis.convertToPixel(i);
 
-      if (data.totalVolume !== undefined) {
+      if (data.totalVolume && data.totalDeltaVolume) {
         const yBottom = yAxis.convertToPixel(data.low!);
         const yTop = yAxis.convertToPixel(data.high!);
+
         if (data.textPosition === TextPosition.Up) {
-          ctx.fillStyle = COLOR_DEMAND;
+          if(config.liteMode) {
+            drawLiteMode(ctx, x, yTop - 25, 'SELL');
+          } else {
+            ctx.fillStyle = COLOR_DEMAND;
+            if(data.totalDeltaVolume.includes("-")) {
+              ctx.fillStyle = COLOR_SUPPLY;
+            }
+            const initialPadding = yTop - 10 - fontSize;
+            ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
 
-          const initialPadding = yTop - 10 - fontSize;
-          ctx.fillText(data.totalDeltaVolume?.toString(), x, initialPadding);
+            ctx.fillStyle = COLOR_SUPPLY;
+            if (data.algo?.length > 0) {
+              ctx.fillText(data.algo!, x, initialPadding - 15 - fontSize);
+            }
+            if (data.secondAlgo?.length > 0) {
+              ctx.fillText(data.secondAlgo!, x, initialPadding - 30 - fontSize);
+            }
+          }
 
-          ctx.fillStyle = COLOR_SUPPLY;
-          if (data.algo?.length > 0) {
-            ctx.fillText(data.algo!, x, initialPadding - 15 - fontSize);
-          }
-          if (data.secondAlgo?.length > 0) {
-            ctx.fillText(data.secondAlgo!, x, initialPadding - 30 - fontSize);
-          }
         } else {
-          ctx.fillStyle = COLOR_SUPPLY;
+          if(config.liteMode) {
+            drawLiteMode(ctx, x, yBottom + 5, 'BUY');
+          } else {
+            ctx.fillStyle = COLOR_SUPPLY;
 
-          const initialPadding = yBottom + 10 + fontSize;
-          ctx.fillText(data.totalDeltaVolume?.toString(), x, initialPadding);
+            if(!data.totalDeltaVolume.includes('-')) {
+              ctx.fillStyle = COLOR_DEMAND;
+            }
+            const initialPadding = yBottom + 10 + fontSize;
+            ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
 
-          ctx.fillStyle = COLOR_DEMAND;
-          if (data.algo?.length > 0) {
-            ctx.fillText(data.algo!, x, initialPadding + 15 + fontSize);
-          }
-          if (data.secondAlgo?.length > 0) {
-            ctx.fillText(data.secondAlgo!, x, initialPadding + 30 + fontSize);
+            ctx.fillStyle = COLOR_DEMAND;
+            if (data.algo?.length > 0) {
+              ctx.fillText(data.algo!, x, initialPadding + 15 + fontSize);
+            }
+            if (data.secondAlgo?.length > 0) {
+              ctx.fillText(data.secondAlgo!, x, initialPadding + 30 + fontSize);
+            }
           }
         }
       }

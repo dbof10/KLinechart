@@ -5143,21 +5143,26 @@ function signalToString(value) {
             return "";
     }
 }
+function toWaveConfiguration(params) {
+    var swingReversal = Number(params[0]) || 2; // default to 3 if not valid
+    var liteMode = Boolean(params[1]);
+    return {
+        swingReversal: swingReversal,
+        liteMode: liteMode,
+    };
+}
 var TWave = {
     name: "TWA",
     shortName: "TWave",
     isOverlay: true,
-    calcParams: [2],
+    calcParams: [2, true],
     calc: function (dataList, indicator, alertCallback) {
         var params = indicator.calcParams;
-        var swingReversal = params[0];
+        var config = toWaveConfiguration(params);
         var extendedData = [];
         var highs = [];
         var lows = [];
         var closes = [];
-        var config = {
-            swingReversal: swingReversal
-        };
         dataList.forEach(function (e) {
             var item = {
                 open: e.open,
@@ -5184,6 +5189,8 @@ var TWave = {
         ctx.font = "".concat(fontSize, "px Helvetica Neue");
         ctx.textAlign = "center";
         var result = indicator.result;
+        var params = indicator.calcParams;
+        toWaveConfiguration(params);
         for (var i = from; i < to; i++) {
             var data = result[i];
             var x = xAxis.convertToPixel(i);
@@ -5192,6 +5199,9 @@ var TWave = {
                 var yTop = yAxis.convertToPixel(data.high);
                 if (data.textPosition === TextPosition.Up) {
                     ctx.fillStyle = COLOR_DEMAND;
+                    if (data.totalDeltaVolume < 0) {
+                        ctx.fillStyle = COLOR_SUPPLY;
+                    }
                     var initialPadding = yTop - 10 - fontSize;
                     ctx.fillText((_b = data.totalDeltaVolume) === null || _b === void 0 ? void 0 : _b.toString(), x, initialPadding);
                     ctx.fillStyle = COLOR_SUPPLY;
@@ -5204,6 +5214,9 @@ var TWave = {
                 }
                 else {
                     ctx.fillStyle = COLOR_SUPPLY;
+                    if (data.totalDeltaVolume > 0) {
+                        ctx.fillStyle = COLOR_DEMAND;
+                    }
                     var initialPadding = yBottom + 10 + fontSize;
                     ctx.fillText((_e = data.totalDeltaVolume) === null || _e === void 0 ? void 0 : _e.toString(), x, initialPadding);
                     ctx.fillStyle = COLOR_DEMAND;

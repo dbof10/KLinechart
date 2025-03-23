@@ -1,4 +1,5 @@
 export interface TWaveConfiguration {
 
-  swingReversal: number
+  swingReversal: number,
+  liteMode: boolean
 }
