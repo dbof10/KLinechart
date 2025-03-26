@@ -5151,11 +5151,40 @@ function toWaveConfiguration(params) {
         liteMode: liteMode,
     };
 }
+function drawLabelBox(ctx, x, y, width, height, label, radius) {
+    if (radius === void 0) { radius = 4; }
+    var isBuy = label === 'BUY';
+    var left = x - width / 2; // center align horizontally
+    // Rounded rectangle
+    ctx.beginPath();
+    ctx.moveTo(left + radius, y);
+    ctx.lineTo(left + width - radius, y);
+    ctx.quadraticCurveTo(left + width, y, left + width, y + radius);
+    ctx.lineTo(left + width, y + height - radius);
+    ctx.quadraticCurveTo(left + width, y + height, left + width - radius, y + height);
+    ctx.lineTo(left + radius, y + height);
+    ctx.quadraticCurveTo(left, y + height, left, y + height - radius);
+    ctx.lineTo(left, y + radius);
+    ctx.quadraticCurveTo(left, y, left + radius, y);
+    ctx.closePath();
+    // Fill box
+    ctx.fillStyle = isBuy ? '#00c853' : '#d50000';
+    ctx.fill();
+    // Draw label text
+    ctx.fillStyle = 'white';
+    ctx.font = 'bold 12px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(label, x, y + height / 2); // x is still the center
+}
+function drawLiteMode(ctx, x, y, label) {
+    drawLabelBox(ctx, x, y, 40, 20, label);
+}
 var TWave = {
     name: "TWA",
     shortName: "TWave",
     isOverlay: true,
-    calcParams: [2, true],
+    calcParams: [2, 0],
     calc: function (dataList, indicator, alertCallback) {
         var params = indicator.calcParams;
         var config = toWaveConfiguration(params);
@@ -5182,7 +5211,7 @@ var TWave = {
         return onRender(extendedData, highs, lows, closes, config, alertCallback);
     },
     draw: function (_a) {
-        var _b, _c, _d, _e, _f, _g;
+        var _b, _c, _d, _e;
         var ctx = _a.ctx; _a.barSpace; var visibleRange = _a.visibleRange, indicator = _a.indicator, xAxis = _a.xAxis, yAxis = _a.yAxis;
         var from = visibleRange.from, to = visibleRange.to;
         var fontSize = 14;
@@ -5190,41 +5219,51 @@ var TWave = {
         ctx.textAlign = "center";
         var result = indicator.result;
         var params = indicator.calcParams;
-        toWaveConfiguration(params);
+        var config = toWaveConfiguration(params);
         for (var i = from; i < to; i++) {
             var data = result[i];
             var x = xAxis.convertToPixel(i);
-            if (data.totalVolume !== undefined) {
+            if (data.totalVolume && data.totalDeltaVolume) {
                 var yBottom = yAxis.convertToPixel(data.low);
                 var yTop = yAxis.convertToPixel(data.high);
                 if (data.textPosition === TextPosition.Up) {
-                    ctx.fillStyle = COLOR_DEMAND;
-                    if (data.totalDeltaVolume < 0) {
+                    if (config.liteMode) {
+                        drawLiteMode(ctx, x, yTop - 25, 'SELL');
+                    }
+                    else {
+                        ctx.fillStyle = COLOR_DEMAND;
+                        if (data.totalDeltaVolume.includes("-")) {
+                            ctx.fillStyle = COLOR_SUPPLY;
+                        }
+                        var initialPadding = yTop - 10 - fontSize;
+                        ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
                         ctx.fillStyle = COLOR_SUPPLY;
-                    }
-                    var initialPadding = yTop - 10 - fontSize;
-                    ctx.fillText((_b = data.totalDeltaVolume) === null || _b === void 0 ? void 0 : _b.toString(), x, initialPadding);
-                    ctx.fillStyle = COLOR_SUPPLY;
-                    if (((_c = data.algo) === null || _c === void 0 ? void 0 : _c.length) > 0) {
-                        ctx.fillText(data.algo, x, initialPadding - 15 - fontSize);
-                    }
-                    if (((_d = data.secondAlgo) === null || _d === void 0 ? void 0 : _d.length) > 0) {
-                        ctx.fillText(data.secondAlgo, x, initialPadding - 30 - fontSize);
+                        if (((_b = data.algo) === null || _b === void 0 ? void 0 : _b.length) > 0) {
+                            ctx.fillText(data.algo, x, initialPadding - 15 - fontSize);
+                        }
+                        if (((_c = data.secondAlgo) === null || _c === void 0 ? void 0 : _c.length) > 0) {
+                            ctx.fillText(data.secondAlgo, x, initialPadding - 30 - fontSize);
+                        }
                     }
                 }
                 else {
-                    ctx.fillStyle = COLOR_SUPPLY;
-                    if (data.totalDeltaVolume > 0) {
+                    if (config.liteMode) {
+                        drawLiteMode(ctx, x, yBottom + 5, 'BUY');
+                    }
+                    else {
+                        ctx.fillStyle = COLOR_SUPPLY;
+                        if (!data.totalDeltaVolume.includes('-')) {
+                            ctx.fillStyle = COLOR_DEMAND;
+                        }
+                        var initialPadding = yBottom + 10 + fontSize;
+                        ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
                         ctx.fillStyle = COLOR_DEMAND;
-                    }
-                    var initialPadding = yBottom + 10 + fontSize;
-                    ctx.fillText((_e = data.totalDeltaVolume) === null || _e === void 0 ? void 0 : _e.toString(), x, initialPadding);
-                    ctx.fillStyle = COLOR_DEMAND;
-                    if (((_f = data.algo) === null || _f === void 0 ? void 0 : _f.length) > 0) {
-                        ctx.fillText(data.algo, x, initialPadding + 15 + fontSize);
-                    }
-                    if (((_g = data.secondAlgo) === null || _g === void 0 ? void 0 : _g.length) > 0) {
-                        ctx.fillText(data.secondAlgo, x, initialPadding + 30 + fontSize);
+                        if (((_d = data.algo) === null || _d === void 0 ? void 0 : _d.length) > 0) {
+                            ctx.fillText(data.algo, x, initialPadding + 15 + fontSize);
+                        }
+                        if (((_e = data.secondAlgo) === null || _e === void 0 ? void 0 : _e.length) > 0) {
+                            ctx.fillText(data.secondAlgo, x, initialPadding + 30 + fontSize);
+                        }
                     }
                 }
             }
