@@ -1,10 +1,10 @@
-import {Indicator, IndicatorTemplate} from "../../../component/Indicator";
+import { Indicator, IndicatorTemplate } from "../../../component/Indicator";
 import KLineData from "../../../common/KLineData";
-import {getBarByIndex} from "./utils/TWaveHelper";
-import {Bar} from "./model/Bar";
-import {calculateRealtimeSwing, getBarType} from "./utils/TWaveCore";
-import {BarType} from "./model/BarType";
-import {Swing} from "./model/Swing";
+import { getBarByIndex } from "./utils/TWaveHelper";
+import { Bar } from "./model/Bar";
+import { calculateRealtimeSwing, getBarType } from "./utils/TWaveCore";
+import { BarType } from "./model/BarType";
+import { Swing } from "./model/Swing";
 import {
   canChangeDownInExceptionConditions,
   canChangeUpInExceptionConditions,
@@ -14,12 +14,12 @@ import {
   swingTrendDown,
   swingTrendUp,
 } from "./utils/TWaveSwing";
-import {EnumWrapper} from "./model/EnumWrapper";
-import {NumberWrapper} from "./model/NumberWrapper";
-import {TWaveKLineData} from "./model/TWaveKLineData";
-import {DrawData} from "./model/DrawData";
-import {TextPosition} from "./model/TextPosition";
-import {formatBigNumber} from "../../../common/utils/format";
+import { EnumWrapper } from "./model/EnumWrapper";
+import { NumberWrapper } from "./model/NumberWrapper";
+import { TWaveKLineData } from "./model/TWaveKLineData";
+import { DrawData } from "./model/DrawData";
+import { TextPosition } from "./model/TextPosition";
+import { formatBigNumber } from "../../../common/utils/format";
 import {
   SIGNAL_PULLBACK_BUY,
   SIGNAL_PULLBACK_SELL,
@@ -28,26 +28,13 @@ import {
   SIGNAL_STOOGE_SELL,
   SIGNAL_UPTHRUST,
 } from "./utils/TWaveAlgo";
-import {COLOR_DEMAND, COLOR_SUPPLY} from "../../../utils/ColorConstant";
-import {TWaveConfiguration} from "./model/TWaveConfiguration";
-import {Trade} from "./model/Trade";
-import {getTradeIfSignalPresent} from "./utils/TradeUtils";
-
-
-interface TWave {
-  low?: number;
-  high?: number;
-  totalVolume?: string;
-  totalDeltaVolume?: string;
-  algo?: string;
-  secondAlgo?: string;
-  index: string;
-  textPosition?: TextPosition;
-  metaData?: Trade;
-}
+import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
+import { TWaveConfiguration } from "./model/TWaveConfiguration";
+import { getTradeIfSignalPresent } from "./utils/TradeUtils";
+import { TWaveBar } from "./model/TWaveBar";
 
 function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], closes: number[],
-                  config: TWaveConfiguration): TWave[] {
+                  config: TWaveConfiguration): TWaveBar[] {
 
   const SwingLength = config.swingReversal;
 
@@ -291,7 +278,7 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
   }
 
   return dataList.map((e: TWaveKLineData, index: number) => {
-    const twave: TWave = {index: index.toString()};
+    const twave: TWaveBar = { index: index.toString() };
     if (e.totalVolume !== undefined && e.totalDeltaVolume !== undefined) {
       twave.totalVolume = formatBigNumber(e.totalVolume);
       twave.totalDeltaVolume = formatBigNumber(e.totalDeltaVolume);
@@ -348,10 +335,10 @@ function drawLabelBox(
   y: number,
   width: number,
   height: number,
-  label: 'BUY' | 'SELL',
-  radius: number = 4
+  label: "BUY" | "SELL",
+  radius: number = 4,
 ) {
-  const isBuy = label === 'BUY';
+  const isBuy = label === "BUY";
 
   const left = x - width / 2; // center align horizontally
 
@@ -369,30 +356,30 @@ function drawLabelBox(
   ctx.closePath();
 
   // Fill box
-  ctx.fillStyle = isBuy ? '#00c853' : '#d50000';
+  ctx.fillStyle = isBuy ? "#00c853" : "#d50000";
   ctx.fill();
 
   // Draw label text
-  ctx.fillStyle = 'white';
-  ctx.font = 'bold 12px Arial';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
+  ctx.fillStyle = "white";
+  ctx.font = "bold 12px Arial";
+  ctx.textAlign = "center";
+  ctx.textBaseline = "middle";
   ctx.fillText(label, x, y + height / 2); // x is still the center
 }
 
 
-function drawLiteMode(ctx: CanvasRenderingContext2D, x: number, y: number, label: 'BUY' | 'SELL') {
+function drawLiteMode(ctx: CanvasRenderingContext2D, x: number, y: number, label: "BUY" | "SELL") {
   drawLabelBox(ctx, x, y, 40, 20, label);
 }
 
-const TWave: IndicatorTemplate<TWave> = {
+const TWave: IndicatorTemplate<TWaveBar> = {
   name: "TWA",
   shortName: "TWave",
   isOverlay: true,
   calcParams: [2, 0],
-  calc: (dataList: KLineData[], indicator: Indicator<TWave>) => {
+  calc: (dataList: KLineData[], indicator: Indicator<TWaveBar>) => {
 
-    const {calcParams: params} = indicator
+    const { calcParams: params } = indicator;
     const config: TWaveConfiguration = toWaveConfiguration(params);
 
     const extendedData: TWaveKLineData[] = [];
@@ -426,13 +413,13 @@ const TWave: IndicatorTemplate<TWave> = {
            xAxis,
            yAxis,
          }) => {
-    const {from, to} = visibleRange;
+    const { from, to } = visibleRange;
 
     const fontSize = 14;
     ctx.font = `${fontSize}px Helvetica Neue`;
     ctx.textAlign = "center";
     const result = indicator.result;
-    const {calcParams: params} = indicator
+    const { calcParams: params } = indicator;
     const config: TWaveConfiguration = toWaveConfiguration(params);
 
     for (let i = from; i < to; i++) {
@@ -445,7 +432,7 @@ const TWave: IndicatorTemplate<TWave> = {
 
         if (data.textPosition === TextPosition.Up) {
           if (config.liteMode) {
-            drawLiteMode(ctx, x, yTop - 25, 'SELL');
+            drawLiteMode(ctx, x, yTop - 25, "SELL");
           } else {
             ctx.fillStyle = COLOR_DEMAND;
             if (data.totalDeltaVolume.includes("-")) {
@@ -465,11 +452,11 @@ const TWave: IndicatorTemplate<TWave> = {
 
         } else {
           if (config.liteMode) {
-            drawLiteMode(ctx, x, yBottom + 5, 'BUY');
+            drawLiteMode(ctx, x, yBottom + 5, "BUY");
           } else {
             ctx.fillStyle = COLOR_SUPPLY;
 
-            if (!data.totalDeltaVolume.includes('-')) {
+            if (!data.totalDeltaVolume.includes("-")) {
               ctx.fillStyle = COLOR_DEMAND;
             }
             const initialPadding = yBottom + 10 + fontSize;

@@ -5077,7 +5077,7 @@ function toWaveConfiguration(params) {
 }
 function drawLabelBox(ctx, x, y, width, height, label, radius) {
     if (radius === void 0) { radius = 4; }
-    var isBuy = label === 'BUY';
+    var isBuy = label === "BUY";
     var left = x - width / 2; // center align horizontally
     // Rounded rectangle
     ctx.beginPath();
@@ -5092,13 +5092,13 @@ function drawLabelBox(ctx, x, y, width, height, label, radius) {
     ctx.quadraticCurveTo(left, y, left + radius, y);
     ctx.closePath();
     // Fill box
-    ctx.fillStyle = isBuy ? '#00c853' : '#d50000';
+    ctx.fillStyle = isBuy ? "#00c853" : "#d50000";
     ctx.fill();
     // Draw label text
-    ctx.fillStyle = 'white';
-    ctx.font = 'bold 12px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
+    ctx.fillStyle = "white";
+    ctx.font = "bold 12px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
     ctx.fillText(label, x, y + height / 2); // x is still the center
 }
 function drawLiteMode(ctx, x, y, label) {
@@ -5152,7 +5152,7 @@ var TWave = {
                 var yTop = yAxis.convertToPixel(data.high);
                 if (data.textPosition === TextPosition.Up) {
                     if (config.liteMode) {
-                        drawLiteMode(ctx, x, yTop - 25, 'SELL');
+                        drawLiteMode(ctx, x, yTop - 25, "SELL");
                     }
                     else {
                         ctx.fillStyle = COLOR_DEMAND;
@@ -5172,11 +5172,11 @@ var TWave = {
                 }
                 else {
                     if (config.liteMode) {
-                        drawLiteMode(ctx, x, yBottom + 5, 'BUY');
+                        drawLiteMode(ctx, x, yBottom + 5, "BUY");
                     }
                     else {
                         ctx.fillStyle = COLOR_SUPPLY;
-                        if (!data.totalDeltaVolume.includes('-')) {
+                        if (!data.totalDeltaVolume.includes("-")) {
                             ctx.fillStyle = COLOR_DEMAND;
                         }
                         var initialPadding = yBottom + 10 + fontSize;
