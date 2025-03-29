@@ -53,6 +53,7 @@ import { YesterdayStructure } from "./YesterdayStructure";
 import { VWAP } from "./VWAP";
 import averageTrueRange from "./atr";
 import Quarters from "./Quarters";
+import PositionMarker from "./position/marker";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -64,7 +65,7 @@ const extensions = [
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
   TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
-  YesterdayStructure, VWAP, averageTrueRange, Quarters
+  YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker
 ]
 
 const mapName = {
@@ -97,14 +98,15 @@ const mapName = {
   "WR": "Williams %R",
   "TW": "TWave Histogram",
   "TB": "TBlock Histogram",
-  "TPA": "Tpace",
-  "TBA": "TBid Ask Oscillator",
+  "TPA": "TPace",
+  "TBA": "TSupply Demand Oscillator",
   "TCD": "TCumulative Delta",
   "TWA": "TWave",
   "YEST": "Yesterday Low",
   "VWAP": "VWAP",
   "ATR": "Average True Range",
   "QUA": "Quarter Session",
+  "POS" : "Position Marker"
 };
 
 

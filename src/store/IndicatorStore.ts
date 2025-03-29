@@ -91,9 +91,6 @@ export default class IndicatorStore {
     if (draw !== undefined && instance.setDraw(draw)) {
       updateFlag = true
     }
-    if(alertCallback != undefined && instance.setAlert(alertCallback)) {
-      updateFlag = true
-    }
     if (isFunction(calc)) {
       instance.calc = calc
       calcFlag = true
@@ -125,7 +122,6 @@ export default class IndicatorStore {
     }
     const IndicatorClazz = getIndicatorClass(name)!
     const instance = new IndicatorClazz()
-    instance.alertCallback = indicator.alertCallback;
 
     this.synchronizeSeriesPrecision(instance)
     this._overrideInstance(instance, indicator)

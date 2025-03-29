@@ -11,6 +11,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import {PositionMarker} from "./PositionMarker";
 
 export default interface KLineData {
   timestamp: number
@@ -23,4 +24,6 @@ export default interface KLineData {
   bidVol?: number
   askVol?: number
   isStartOfSession: boolean
+  tradeEntry?: PositionMarker;
+  tradeExit?: PositionMarker;
 }

@@ -21,8 +21,7 @@ import {
   type IndicatorFigure,
   type IndicatorFigureStylesCallbackData,
   IndicatorSeries,
-  type IndicatorTemplate,
-  IndicatorFigureAttrsCallbackParams,
+  type IndicatorTemplate
 } from "../../component/Indicator";
 import { COLOR_DEMAND, COLOR_SUPPLY } from "../../utils/ColorConstant";
 

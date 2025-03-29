@@ -1031,7 +1031,7 @@ var IndicatorImp = /** @class */ (function () {
     function IndicatorImp(indicator) {
         this.result = [];
         this._precisionFlag = false;
-        var name = indicator.name, shortName = indicator.shortName, series = indicator.series, calcParams = indicator.calcParams, figures = indicator.figures, precision = indicator.precision, shouldOhlc = indicator.shouldOhlc, shouldFormatBigNumber = indicator.shouldFormatBigNumber, visible = indicator.visible, zLevel = indicator.zLevel, minValue = indicator.minValue, maxValue = indicator.maxValue, styles = indicator.styles, extendData = indicator.extendData, regenerateFigures = indicator.regenerateFigures, createTooltipDataSource = indicator.createTooltipDataSource, draw = indicator.draw, alertCallback = indicator.alertCallback;
+        var name = indicator.name, shortName = indicator.shortName, series = indicator.series, calcParams = indicator.calcParams, figures = indicator.figures, precision = indicator.precision, shouldOhlc = indicator.shouldOhlc, shouldFormatBigNumber = indicator.shouldFormatBigNumber, visible = indicator.visible, zLevel = indicator.zLevel, minValue = indicator.minValue, maxValue = indicator.maxValue, styles = indicator.styles, extendData = indicator.extendData, regenerateFigures = indicator.regenerateFigures, createTooltipDataSource = indicator.createTooltipDataSource, draw = indicator.draw;
         this.name = name;
         this.shortName = shortName !== null && shortName !== void 0 ? shortName : name;
         this.series = series !== null && series !== void 0 ? series : exports.IndicatorSeries.Normal;
@@ -1049,7 +1049,6 @@ var IndicatorImp = /** @class */ (function () {
         this.regenerateFigures = regenerateFigures !== null && regenerateFigures !== void 0 ? regenerateFigures : null;
         this.createTooltipDataSource = createTooltipDataSource !== null && createTooltipDataSource !== void 0 ? createTooltipDataSource : null;
         this.draw = draw !== null && draw !== void 0 ? draw : null;
-        this.alertCallback = alertCallback !== null && alertCallback !== void 0 ? alertCallback : null;
     }
     IndicatorImp.prototype.setShortName = function (shortName) {
         if (this.shortName !== shortName) {
@@ -1164,13 +1163,6 @@ var IndicatorImp = /** @class */ (function () {
         }
         return false;
     };
-    IndicatorImp.prototype.setAlert = function (callback) {
-        if (this.alertCallback !== callback) {
-            this.alertCallback = callback;
-            return true;
-        }
-        return false;
-    };
     IndicatorImp.prototype.calcIndicator = function (dataList) {
         return __awaiter(this, void 0, void 0, function () {
             var result, e_1;
@@ -1178,7 +1170,7 @@ var IndicatorImp = /** @class */ (function () {
                 switch (_a.label) {
                     case 0:
                         _a.trys.push([0, 2, , 3]);
-                        return [4 /*yield*/, this.calc(dataList, this, this.alertCallback)];
+                        return [4 /*yield*/, this.calc(dataList, this)];
                     case 1:
                         result = _a.sent();
                         this.result = result;
@@ -1198,8 +1190,8 @@ var IndicatorImp = /** @class */ (function () {
             function Custom() {
                 return _super.call(this, template) || this;
             }
-            Custom.prototype.calc = function (dataList, indicator, alertCallback) {
-                return template.calc(dataList, indicator, alertCallback);
+            Custom.prototype.calc = function (dataList, indicator) {
+                return template.calc(dataList, indicator);
             };
             return Custom;
         }(IndicatorImp));
@@ -4834,87 +4826,21 @@ var NumberWrapper = /** @class */ (function () {
     return NumberWrapper;
 }());
 
-function areSameDay(epochMilliseconds1, epochMilliseconds2) {
-    var date1 = new Date(epochMilliseconds1);
-    var date2 = new Date(epochMilliseconds2);
-    return (date1.getDate() === date2.getDate() &&
-        date1.getMonth() === date2.getMonth() &&
-        date1.getFullYear() === date2.getFullYear());
-}
-function areSameHourAndMinute(timestamp1, timestamp2, timeframe) {
-    var timeframeInMinute = timeframe / (60 * 1000);
-    var date1 = new Date(timestamp1);
-    var date2 = new Date(timestamp2);
-    var hour1 = date1.getHours();
-    var minute1 = date1.getMinutes();
-    var hour2 = date2.getHours();
-    var minute2 = date2.getMinutes();
-    return hour1 === hour2 && ((minute1 - minute2) < timeframeInMinute);
-}
-function isAfterMinute(timestamp1, timestamp2, timeframe) {
-    var timeframeInMinute = timeframe / (60 * 1000);
-    var date1 = new Date(timestamp1);
-    var date2 = new Date(timestamp2);
-    var hour1 = date1.getHours();
-    var minute1 = date1.getMinutes();
-    var hour2 = date2.getHours();
-    var minute2 = date2.getMinutes();
-    if (hour1 > hour2) {
-        return true;
-    }
-    else
-        return hour1 === hour2 && ((minute1 - minute2) >= timeframeInMinute);
-}
-function timeFrameToMilliseconds(timeframe) {
-    if (timeframe.endsWith("M") || timeframe.endsWith("H")) {
-        switch (timeframe) {
-            case "1M":
-                return 60 * 1000; // 1 minute
-            case "3M":
-                return 3 * 60 * 1000; // 3 minutes
-            case "15M":
-                return 15 * 60 * 1000; // 15 minutes
-            case "1H":
-                return 60 * 60 * 1000; // 1 hour
-            case "4H":
-                return 4 * 60 * 60 * 1000; // 4 hours
-            default:
-                return 0;
-        }
-    }
-    else {
-        return -1;
-    }
-}
-function areSameMinute(timestamp1, timestamp2) {
-    var date1 = new Date(timestamp1);
-    var date2 = new Date(timestamp2);
-    var hour1 = date1.getHours();
-    var minute1 = date1.getMinutes();
-    var hour2 = date2.getHours();
-    var minute2 = date2.getMinutes();
-    return hour1 === hour2 && minute1 == minute2;
-}
-function formatTimestamp(milliseconds) {
-    var date = new Date(milliseconds);
-    var hours = ("0" + date.getHours()).slice(-2);
-    var minutes = ("0" + date.getMinutes()).slice(-2);
-    var seconds = ("0" + date.getSeconds()).slice(-2);
-    var day = ("0" + date.getDate()).slice(-2);
-    var month = ("0" + (date.getMonth() + 1)).slice(-2); // Months are zero-based
-    var year = date.getFullYear();
-    return "".concat(hours, ":").concat(minutes, ":").concat(seconds, " ").concat(day, "/").concat(month, "/").concat(year);
+function getTradeIfSignalPresent(e, signal1, signal2) {
+    var current = e;
+    var hasSignal = signal1.length > 0 || signal2.length > 0;
+    if (!hasSignal)
+        return undefined;
+    var direction = current.textPosition === TextPosition.Up ? "SELL" : "BUY";
+    var entry = current.close;
+    var metaData = {
+        direction: direction,
+        entry: entry,
+    };
+    return metaData;
 }
 
-function generateRandomUUID() {
-    return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-        var r = Math.random() * 16 | 0;
-        var v = c === 'x' ? r : (r & 0x3 | 0x8);
-        return v.toString(16);
-    });
-}
-
-function onRender(dataList, highs, lows, closes, config, alertCallback) {
+function onRender(dataList, highs, lows, closes, config) {
     var SwingLength = config.swingReversal;
     var prevDirectionalBarIndex = INDEX_START_SEARCH;
     var prevDirectionalBarType = BarType.None;
@@ -5112,14 +5038,7 @@ function onRender(dataList, highs, lows, closes, config, alertCallback) {
             var signal1 = signalToString(e.algo);
             var signal2 = signalToString(e.algo2);
             if (signal1.length > 0 || signal2.length > 0) {
-                var current = Date.now();
-                if (areSameMinute(e.timestamp, current)) {
-                    var alert_1 = {
-                        id: e.timestamp.toString() + "_" + generateRandomUUID(),
-                        message: "Alert signal ".concat(signal1, " ").concat(signal2, " at ").concat(formatTimestamp(e.timestamp)),
-                    };
-                    alertCallback(alert_1);
-                }
+                twave.metaData = getTradeIfSignalPresent(e, signal1, signal2);
             }
             twave.algo = signal1;
             twave.secondAlgo = signal2;
@@ -5190,7 +5109,7 @@ var TWave = {
     shortName: "TWave",
     isOverlay: true,
     calcParams: [2, 0],
-    calc: function (dataList, indicator, alertCallback) {
+    calc: function (dataList, indicator) {
         var params = indicator.calcParams;
         var config = toWaveConfiguration(params);
         var extendedData = [];
@@ -5213,7 +5132,7 @@ var TWave = {
             lows.push(e.low);
             closes.push(e.close);
         });
-        return onRender(extendedData, highs, lows, closes, config, alertCallback);
+        return onRender(extendedData, highs, lows, closes, config);
     },
     draw: function (_a) {
         var _b, _c, _d, _e;
@@ -5276,6 +5195,59 @@ var TWave = {
         return false;
     },
 };
+
+function areSameDay(epochMilliseconds1, epochMilliseconds2) {
+    var date1 = new Date(epochMilliseconds1);
+    var date2 = new Date(epochMilliseconds2);
+    return (date1.getDate() === date2.getDate() &&
+        date1.getMonth() === date2.getMonth() &&
+        date1.getFullYear() === date2.getFullYear());
+}
+function areSameHourAndMinute(timestamp1, timestamp2, timeframe) {
+    var timeframeInMinute = timeframe / (60 * 1000);
+    var date1 = new Date(timestamp1);
+    var date2 = new Date(timestamp2);
+    var hour1 = date1.getHours();
+    var minute1 = date1.getMinutes();
+    var hour2 = date2.getHours();
+    var minute2 = date2.getMinutes();
+    return hour1 === hour2 && ((minute1 - minute2) < timeframeInMinute);
+}
+function isAfterMinute(timestamp1, timestamp2, timeframe) {
+    var timeframeInMinute = timeframe / (60 * 1000);
+    var date1 = new Date(timestamp1);
+    var date2 = new Date(timestamp2);
+    var hour1 = date1.getHours();
+    var minute1 = date1.getMinutes();
+    var hour2 = date2.getHours();
+    var minute2 = date2.getMinutes();
+    if (hour1 > hour2) {
+        return true;
+    }
+    else
+        return hour1 === hour2 && ((minute1 - minute2) >= timeframeInMinute);
+}
+function timeFrameToMilliseconds(timeframe) {
+    if (timeframe.endsWith("M") || timeframe.endsWith("H")) {
+        switch (timeframe) {
+            case "1M":
+                return 60 * 1000; // 1 minute
+            case "3M":
+                return 3 * 60 * 1000; // 3 minutes
+            case "15M":
+                return 15 * 60 * 1000; // 15 minutes
+            case "1H":
+                return 60 * 60 * 1000; // 1 hour
+            case "4H":
+                return 4 * 60 * 60 * 1000; // 4 hours
+            default:
+                return 0;
+        }
+    }
+    else {
+        return -1;
+    }
+}
 
 var YesterdayStructure = {
     name: "YEST",
@@ -5504,6 +5476,106 @@ var Quarters = {
     },
 };
 
+var COLOR_ENTRY = '#ffce55'; // Blue
+var COLOR_WIN = '#04cf58'; // Green
+var COLOR_LOSS = '#ea21ff'; // Red
+function drawTradeTriangle(ctx, x, y, size, direction, color) {
+    ctx.beginPath();
+    if (direction === "UP") {
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - size, y + size);
+        ctx.lineTo(x + size, y + size);
+    }
+    else {
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - size, y - size);
+        ctx.lineTo(x + size, y - size);
+    }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+var PositionMarker = {
+    name: "POS",
+    shortName: "PositionMarker",
+    isOverlay: true,
+    calcParams: [],
+    // We inject customData directly (from backtest result)
+    calc: function (dataList, indicator) {
+        var result = [];
+        for (var i = 0; i < dataList.length; i++) {
+            var item = dataList[i];
+            var marker = {};
+            if (item.tradeEntry) {
+                marker.price = item.tradeEntry.entryPrice;
+                marker.direction = item.tradeEntry.direction;
+                if (item.tradeEntry.direction === "BUY") {
+                    marker.color = COLOR_ENTRY;
+                }
+                else {
+                    marker.color = COLOR_ENTRY;
+                }
+                marker.status = "OPEN";
+                result.push(marker);
+            }
+            else if (item.tradeExit) {
+                marker.price = item.tradeExit.exitPrice;
+                marker.direction = item.tradeExit.direction;
+                marker.status = "CLOSE";
+                if (item.tradeExit.result === "WIN") {
+                    marker.color = COLOR_WIN;
+                }
+                else {
+                    marker.color = COLOR_LOSS;
+                }
+                result.push(marker);
+            }
+            else {
+                result.push(marker);
+            }
+        }
+        return result;
+    },
+    draw: function (_a) {
+        var ctx = _a.ctx, xAxis = _a.xAxis, yAxis = _a.yAxis, visibleRange = _a.visibleRange, indicator = _a.indicator;
+        var from = visibleRange.from, to = visibleRange.to;
+        var data = indicator.result;
+        var size = 5;
+        for (var i = from; i < to; i++) {
+            var marker = data[i];
+            if (!marker.price || !marker.color || !marker.direction || !marker.status)
+                continue;
+            var x = xAxis.convertToPixel(i);
+            var y = yAxis.convertToPixel(marker.price);
+            var offsetY = void 0;
+            var triangleDirection = void 0;
+            if (marker.status === "OPEN") {
+                if (marker.direction === "BUY") {
+                    offsetY = 6;
+                    triangleDirection = "UP";
+                }
+                else {
+                    offsetY = -6;
+                    triangleDirection = "DOWN";
+                }
+            }
+            else {
+                // status === "CLOSE"
+                if (marker.direction === "BUY") {
+                    offsetY = -6;
+                    triangleDirection = "DOWN";
+                }
+                else {
+                    offsetY = 6;
+                    triangleDirection = "UP";
+                }
+            }
+            drawTradeTriangle(ctx, x, y + offsetY, size, triangleDirection, marker.color);
+        }
+        return false;
+    }
+};
+
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -5526,7 +5598,7 @@ var extensions$2 = [
     psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
     stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
     TWaveVolume, TBlockVolume, TPace, TBidAskOscillator, TCumulativeDelta, TWave,
-    YesterdayStructure, VWAP, averageTrueRange, Quarters
+    YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker
 ];
 var mapName = {
     "AVP": "Average Price",
@@ -5558,14 +5630,15 @@ var mapName = {
     "WR": "Williams %R",
     "TW": "TWave Histogram",
     "TB": "TBlock Histogram",
-    "TPA": "Tpace",
-    "TBA": "TBid Ask Oscillator",
+    "TPA": "TPace",
+    "TBA": "TSupply Demand Oscillator",
     "TCD": "TCumulative Delta",
     "TWA": "TWave",
     "YEST": "Yesterday Low",
     "VWAP": "VWAP",
     "ATR": "Average True Range",
     "QUA": "Quarter Session",
+    "POS": "Position Marker"
 };
 extensions$2.forEach(function (indicator) {
     indicators[indicator.name] = IndicatorImp.extend(indicator);
@@ -5609,7 +5682,7 @@ var IndicatorStore = /** @class */ (function () {
         this._chartStore = chartStore;
     }
     IndicatorStore.prototype._overrideInstance = function (instance, indicator) {
-        var shortName = indicator.shortName, series = indicator.series, calcParams = indicator.calcParams, precision = indicator.precision, figures = indicator.figures, minValue = indicator.minValue, maxValue = indicator.maxValue, shouldOhlc = indicator.shouldOhlc, shouldFormatBigNumber = indicator.shouldFormatBigNumber, visible = indicator.visible, zLevel = indicator.zLevel, styles = indicator.styles, extendData = indicator.extendData, regenerateFigures = indicator.regenerateFigures, createTooltipDataSource = indicator.createTooltipDataSource, draw = indicator.draw, calc = indicator.calc, alertCallback = indicator.alertCallback;
+        var shortName = indicator.shortName, series = indicator.series, calcParams = indicator.calcParams, precision = indicator.precision, figures = indicator.figures, minValue = indicator.minValue, maxValue = indicator.maxValue, shouldOhlc = indicator.shouldOhlc, shouldFormatBigNumber = indicator.shouldFormatBigNumber, visible = indicator.visible, zLevel = indicator.zLevel, styles = indicator.styles, extendData = indicator.extendData, regenerateFigures = indicator.regenerateFigures, createTooltipDataSource = indicator.createTooltipDataSource, draw = indicator.draw, calc = indicator.calc; indicator.alertCallback;
         var updateFlag = false;
         if (isString(shortName) && instance.setShortName(shortName)) {
             updateFlag = true;
@@ -5665,9 +5738,6 @@ var IndicatorStore = /** @class */ (function () {
         if (draw !== undefined && instance.setDraw(draw)) {
             updateFlag = true;
         }
-        if (alertCallback != undefined && instance.setAlert(alertCallback)) {
-            updateFlag = true;
-        }
         if (isFunction(calc)) {
             instance.calc = calc;
             calcFlag = true;
@@ -5704,7 +5774,6 @@ var IndicatorStore = /** @class */ (function () {
                         }
                         IndicatorClazz = getIndicatorClass(name);
                         instance = new IndicatorClazz();
-                        instance.alertCallback = indicator.alertCallback;
                         this.synchronizeSeriesPrecision(instance);
                         this._overrideInstance(instance, indicator);
                         if (!isStack) {
