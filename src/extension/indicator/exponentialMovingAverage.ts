@@ -28,7 +28,7 @@ const exponentialMovingAverage: IndicatorTemplate<Ema> = {
   name: 'EMA',
   shortName: 'EMA',
   series: IndicatorSeries.Price,
-  calcParams: [6, 12, 20],
+  calcParams: [7, 21, 50],
   precision: 2,
   shouldOhlc: true,
   isOverlay: true,

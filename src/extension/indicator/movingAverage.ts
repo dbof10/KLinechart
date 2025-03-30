@@ -29,7 +29,7 @@ const movingAverage: IndicatorTemplate<Ma> = {
   name: 'MA',
   shortName: 'MA',
   series: IndicatorSeries.Price,
-  calcParams: [5, 20, 50, 200],
+  calcParams: [7, 20, 50, 200],
   precision: 2,
   shouldOhlc: true,
   isOverlay: true,
