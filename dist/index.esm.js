@@ -5657,6 +5657,11 @@ function getSupportedIndicators() {
     });
     return list;
 }
+function getIndicatorCalcByName(name) {
+    var _a;
+    var template = extensions$2.find(function (ext) { return ext.name === name; });
+    return (_a = template === null || template === void 0 ? void 0 : template.calc) !== null && _a !== void 0 ? _a : null;
+}
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16501,4 +16506,4 @@ var utils = {
     drawRectText: drawRectText
 };
 
-export { ActionType, CandleType, DomPosition, FormatDateType, IndicatorSeries, LineType, OverlayMode, PolygonType, TooltipIconPosition, TooltipShowRule, TooltipShowType, YAxisPosition, YAxisType, dispose, getFigureClass, getOverlayClass, getSupportedFigures, getSupportedIndicators, getSupportedLocales, getSupportedOverlays, init, registerFigure, registerIndicator, registerLocale, registerOverlay, registerStyles, registerXAxis, registerYAxis, utils, version };
+export { ActionType, CandleType, DomPosition, FormatDateType, IndicatorSeries, LineType, OverlayMode, PolygonType, TooltipIconPosition, TooltipShowRule, TooltipShowType, YAxisPosition, YAxisType, dispose, getFigureClass, getIndicatorCalcByName, getOverlayClass, getSupportedFigures, getSupportedIndicators, getSupportedLocales, getSupportedOverlays, init, registerFigure, registerIndicator, registerLocale, registerOverlay, registerStyles, registerXAxis, registerYAxis, utils, version };

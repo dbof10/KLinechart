@@ -25,43 +25,67 @@
  */
 
 import {
-  LineType, PolygonType, TooltipShowRule, TooltipShowType, TooltipIconPosition,
-  CandleType, YAxisPosition, YAxisType
+  CandleType,
+  LineType,
+  PolygonType,
+  TooltipIconPosition,
+  TooltipShowRule,
+  TooltipShowType,
+  YAxisPosition,
+  YAxisType
 } from './common/Styles'
 import type Nullable from './common/Nullable'
 
-import { logError, logTag, logWarn } from './common/utils/logger'
+import {logError, logTag, logWarn} from './common/utils/logger'
 
 import {
-  clone, merge, isString, isNumber, isValid, isObject, isArray, isFunction, isBoolean
+  clone,
+  isArray,
+  isBoolean,
+  isFunction,
+  isNumber,
+  isObject,
+  isString,
+  isValid,
+  merge
 } from './common/utils/typeChecks'
-import { formatValue, formatPrecision, formatBigNumber, formatDate, formatThousands, formatFoldDecimal } from './common/utils/format'
-import { calcTextWidth } from './common/utils/canvas'
-import { ActionType } from './common/Action'
-import { IndicatorSeries } from './component/Indicator'
-import { OverlayMode } from './component/Overlay'
-
-import { type Options, FormatDateType } from './Options'
-import ChartImp, { type Chart, DomPosition } from './Chart'
-
-import { checkCoordinateOnArc, drawArc } from './extension/figure/arc'
-import { checkCoordinateOnCircle, drawCircle } from './extension/figure/circle'
 import {
-  checkCoordinateOnLine, drawLine,
-  getLinearYFromSlopeIntercept, getLinearSlopeIntercept, getLinearYFromCoordinates
-} from './extension/figure/line'
-import { checkCoordinateOnPolygon, drawPolygon } from './extension/figure/polygon'
-import { checkCoordinateOnRect, drawRect } from './extension/figure/rect'
-import { drawRectText } from './extension/figure/rectText'
-import { checkCoordinateOnText, drawText } from './extension/figure/text'
+  formatBigNumber,
+  formatDate,
+  formatFoldDecimal,
+  formatPrecision,
+  formatThousands,
+  formatValue
+} from './common/utils/format'
+import {calcTextWidth} from './common/utils/canvas'
+import {ActionType} from './common/Action'
+import {IndicatorSeries} from './component/Indicator'
+import {OverlayMode} from './component/Overlay'
 
-import { registerFigure, getSupportedFigures, getFigureClass } from './extension/figure/index'
-import { registerIndicator, getSupportedIndicators } from './extension/indicator/index'
-import { registerLocale, getSupportedLocales } from './extension/i18n/index'
-import { registerOverlay, getOverlayClass, getSupportedOverlays } from './extension/overlay/index'
-import { registerStyles } from './extension/styles/index'
-import { registerXAxis } from './extension/x-axis'
-import { registerYAxis } from './extension/y-axis'
+import {FormatDateType, type Options} from './Options'
+import ChartImp, {type Chart, DomPosition} from './Chart'
+
+import {checkCoordinateOnArc, drawArc} from './extension/figure/arc'
+import {checkCoordinateOnCircle, drawCircle} from './extension/figure/circle'
+import {
+  checkCoordinateOnLine,
+  drawLine,
+  getLinearSlopeIntercept,
+  getLinearYFromCoordinates,
+  getLinearYFromSlopeIntercept
+} from './extension/figure/line'
+import {checkCoordinateOnPolygon, drawPolygon} from './extension/figure/polygon'
+import {checkCoordinateOnRect, drawRect} from './extension/figure/rect'
+import {drawRectText} from './extension/figure/rectText'
+import {checkCoordinateOnText, drawText} from './extension/figure/text'
+
+import {getFigureClass, getSupportedFigures, registerFigure} from './extension/figure/index'
+import {getIndicatorCalcByName, getSupportedIndicators, registerIndicator} from './extension/indicator/index'
+import {getSupportedLocales, registerLocale} from './extension/i18n/index'
+import {getOverlayClass, getSupportedOverlays, registerOverlay} from './extension/overlay/index'
+import {registerStyles} from './extension/styles/index'
+import {registerXAxis} from './extension/x-axis'
+import {registerYAxis} from './extension/y-axis'
 
 const instances = new Map<string, ChartImp>()
 let chartBaseId = 1
@@ -70,7 +94,7 @@ let chartBaseId = 1
  * Chart version
  * @return {string}
  */
-function version (): string {
+function version(): string {
   return '__VERSION__'
 }
 
@@ -80,7 +104,7 @@ function version (): string {
  * @param options
  * @returns {Chart}
  */
-function init (ds: HTMLElement | string, options?: Options): Nullable<Chart> {
+function init(ds: HTMLElement | string, options?: Options): Nullable<Chart> {
   logTag()
   let dom: Nullable<HTMLElement>
   if (isString(ds)) {
@@ -109,7 +133,7 @@ function init (ds: HTMLElement | string, options?: Options): Nullable<Chart> {
  * Destroy chart instance
  * @param dcs
  */
-function dispose (dcs: HTMLElement | Chart | string): void {
+function dispose(dcs: HTMLElement | Chart | string): void {
   let id: Nullable<string>
   if (dcs instanceof ChartImp) {
     id = dcs.id
@@ -166,7 +190,7 @@ const utils = {
 export {
   version, init, dispose,
   registerFigure, getSupportedFigures, getFigureClass,
-  registerIndicator, getSupportedIndicators,
+  registerIndicator, getSupportedIndicators, getIndicatorCalcByName,
   registerOverlay, getSupportedOverlays, getOverlayClass,
   registerLocale, getSupportedLocales,
   registerStyles,
@@ -176,3 +200,6 @@ export {
   CandleType, YAxisPosition, YAxisType, FormatDateType,
   DomPosition, ActionType, IndicatorSeries, OverlayMode
 }
+
+export type {Indicator} from './component/Indicator'
+export type {TWaveBar} from './extension/indicator/twave/model/TWaveBar'

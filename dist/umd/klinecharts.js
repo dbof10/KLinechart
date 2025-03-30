@@ -5662,6 +5662,11 @@ function getSupportedIndicators() {
     });
     return list;
 }
+function getIndicatorCalcByName(name) {
+    var _a;
+    var template = extensions$2.find(function (ext) { return ext.name === name; });
+    return (_a = template === null || template === void 0 ? void 0 : template.calc) !== null && _a !== void 0 ? _a : null;
+}
 
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -16508,6 +16513,7 @@ var utils = {
 
 exports.dispose = dispose;
 exports.getFigureClass = getFigureClass;
+exports.getIndicatorCalcByName = getIndicatorCalcByName;
 exports.getOverlayClass = getOverlayClass;
 exports.getSupportedFigures = getSupportedFigures;
 exports.getSupportedIndicators = getSupportedIndicators;

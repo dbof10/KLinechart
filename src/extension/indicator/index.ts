@@ -14,7 +14,7 @@
 
 import type Nullable from '../../common/Nullable'
 
-import IndicatorImp, { type IndicatorTemplate, type IndicatorConstructor } from '../../component/Indicator'
+import IndicatorImp, {Indicator, type IndicatorConstructor, type IndicatorTemplate} from '../../component/Indicator'
 
 import awesomeOscillator from './awesomeOscillator'
 import bias from './bias'
@@ -48,17 +48,18 @@ import Tpace from "./twave/Tpace";
 import TBidAskOscillator from "./twave/TBidAskOscilator";
 import TCumulativeDelta from "./twave/TCumulativeDelta";
 import TWave from "./twave/TWave";
-import { DisplayIndicator } from "./DisplayIndicator";
-import { YesterdayStructure } from "./YesterdayStructure";
-import { VWAP } from "./VWAP";
+import {DisplayIndicator} from "./DisplayIndicator";
+import {YesterdayStructure} from "./YesterdayStructure";
+import {VWAP} from "./VWAP";
 import averageTrueRange from "./atr";
 import Quarters from "./Quarters";
 import PositionMarker from "./position/marker";
+import KLineData from "../../common/KLineData";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
 const extensions = [
-   awesomeOscillator, bias, bollingerBands, brar,
+  awesomeOscillator, bias, bollingerBands, brar,
   bullAndBearIndex, commodityChannelIndex, currentRatio, differentOfMovingAverage,
   directionalMovementIndex, easeOfMovementValue, exponentialMovingAverage, momentum,
   movingAverage, movingAverageConvergenceDivergence, onBalanceVolume, priceAndVolumeTrend,
@@ -106,7 +107,7 @@ const mapName = {
   "VWAP": "VWAP",
   "ATR": "Average True Range",
   "QUA": "Quarter Session",
-  "POS" : "Position Marker"
+  "POS": "Position Marker"
 };
 
 
@@ -114,15 +115,15 @@ extensions.forEach((indicator: IndicatorTemplate) => {
   indicators[indicator.name] = IndicatorImp.extend(indicator)
 })
 
-function registerIndicator<D> (indicator: IndicatorTemplate<D>): void {
+function registerIndicator<D>(indicator: IndicatorTemplate<D>): void {
   indicators[indicator.name] = IndicatorImp.extend(indicator)
 }
 
-function getIndicatorClass (name: string): Nullable<IndicatorConstructor> {
+function getIndicatorClass(name: string): Nullable<IndicatorConstructor> {
   return indicators[name] ?? null
 }
 
-function getSupportedIndicators (): DisplayIndicator[] {
+function getSupportedIndicators(): DisplayIndicator[] {
 
   const list: DisplayIndicator[] = [];
   extensions.forEach((indicator: IndicatorTemplate) => {
@@ -139,4 +140,10 @@ function getSupportedIndicators (): DisplayIndicator[] {
 
 }
 
-export { registerIndicator, getIndicatorClass, getSupportedIndicators }
+function getIndicatorCalcByName<D = any>(name: string): Nullable<(dataList: KLineData[], indicator: Indicator<D>) => D[] | Promise<D[]>> {
+  const template = extensions.find(ext => ext.name === name)
+  return template?.calc ?? null
+}
+
+
+export {registerIndicator, getSupportedIndicators, getIndicatorClass, getIndicatorCalcByName}
