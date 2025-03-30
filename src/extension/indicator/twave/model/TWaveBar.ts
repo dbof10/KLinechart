@@ -1,5 +1,5 @@
 import { TextPosition } from "./TextPosition";
-import { Trade } from "./Trade";
+import {Trade} from "../../model/Trade";
 
 export interface TWaveBar {
   low?: number;

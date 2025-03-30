@@ -5540,7 +5540,7 @@ var PositionMarker = {
         var ctx = _a.ctx, xAxis = _a.xAxis, yAxis = _a.yAxis, visibleRange = _a.visibleRange, indicator = _a.indicator;
         var from = visibleRange.from, to = visibleRange.to;
         var data = indicator.result;
-        var size = 5;
+        var size = 8;
         for (var i = from; i < to; i++) {
             var marker = data[i];
             if (!marker.price || !marker.color || !marker.direction || !marker.status)

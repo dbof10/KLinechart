@@ -1,6 +1,6 @@
 import {TextPosition} from "../model/TextPosition";
-import {Trade} from "../model/Trade";
 import {TWaveKLineData} from "../model/TWaveKLineData";
+import {Trade} from "../../model/Trade";
 
 export function getTradeIfSignalPresent(
   e: TWaveKLineData,

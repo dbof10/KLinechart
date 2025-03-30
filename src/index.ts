@@ -201,5 +201,6 @@ export {
   DomPosition, ActionType, IndicatorSeries, OverlayMode
 }
 
+export type {Trade} from './extension/indicator/model/Trade'
 export type {Indicator} from './component/Indicator'
 export type {TWaveBar} from './extension/indicator/twave/model/TWaveBar'

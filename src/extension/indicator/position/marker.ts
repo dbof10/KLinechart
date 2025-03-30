@@ -35,19 +35,6 @@ function drawTradeTriangle(
   ctx.fill();
 }
 
-function drawTradeBox(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  width: number,
-  height: number,
-  color: string
-) {
-  ctx.beginPath();
-  ctx.fillStyle = color;
-  ctx.fillRect(x - width / 2, y, width, height);
-}
-
 const PositionMarker: IndicatorTemplate<Marker> = {
   name: "POS",
   shortName: "PositionMarker",
@@ -101,7 +88,7 @@ const PositionMarker: IndicatorTemplate<Marker> = {
     const data = indicator.result;
 
 
-    const size = 5;
+    const size = 8;
 
 
     for (let i = from; i < to; i++) {
