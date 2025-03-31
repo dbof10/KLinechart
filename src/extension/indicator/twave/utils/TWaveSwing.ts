@@ -56,7 +56,7 @@ export function swingTrendUp(
 
 
     calculateSwingDown(i,lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices,
-      p_lastSwingHighIndices, data);
+      p_lastSwingHighIndices, data, false);
     // drawLabel(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, lastSwingLowIndex, price, DownText, high, low, time, Array_Atr);
 
     p_lastSwingLowIndices.push(lastSwingLowIndex); // add later we compare new low to previous 2 lows
@@ -68,13 +68,13 @@ export function calculateSwingDown(currentIndex: number,
                                    lastSwingHighIndex: number,
                                    p_lastSwingLowIndices: number[],
                                    p_lastSwingHighIndices: number[],
-                                   data: TWaveKLineData[]): void {
+                                   data: TWaveKLineData[], realtime: boolean): void {
 
   if (lastSwingLowIndex > lastSwingHighIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
     lastSwingHighIndex !== INDEX_START_SEARCH) {
 
     calculateAccumulatedVolumeSwingDown(lastSwingLowIndex, lastSwingHighIndex, data);
-    calculateBuyAlgo(currentIndex, lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data);
+    calculateBuyAlgo(currentIndex, lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data, realtime);
   }
 }
 
@@ -144,7 +144,7 @@ export function swingTrendDown(
     swingDirection.value = Swing.Down;
 
     calculateSwingUp(i, lastSwingHighIndex, lastSwingLowIndex,
-      p_lastSwingHighIndices, p_lastSwingLowIndices, data);
+      p_lastSwingHighIndices, p_lastSwingLowIndices, data, false);
 
     p_lastSwingHighIndices.push(lastSwingHighIndex); // add later we compare new high to previous 2 highs
   }
@@ -156,13 +156,13 @@ export function calculateSwingUp(
   lastSwingLowIndex: number,
   p_lastSwingHighIndices: number[],
   p_lastSwingLowIndices: number[],
-  data: TWaveKLineData[]): void {
+  data: TWaveKLineData[], realtime: boolean): void {
 
   if (lastSwingHighIndex > lastSwingLowIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
     lastSwingHighIndex !== INDEX_START_SEARCH) {
 
     calculateAccumulatedVolumeSwingUp(lastSwingHighIndex, lastSwingLowIndex, data);
-    calculateSellAlgo(currentIndex, lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data);
+    calculateSellAlgo(currentIndex, lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data, realtime);
   }
 }
 

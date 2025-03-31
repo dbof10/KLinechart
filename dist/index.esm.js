@@ -4409,7 +4409,7 @@ var SIGNAL_UPTHRUST = 3003;
 var SIGNAL_PULLBACK_BUY = 3004;
 var SIGNAL_PULLBACK_SELL = 3005;
 var LIMIT_BARS_FORM_ALGO = 2; // min distance to show algo to avoid noise
-function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data) {
+function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data, realtime) {
     var size = p_lastSwingHighIndices.length;
     var algoCount = 0;
     if (size > LIMIT_SWING_COMPARISON) {
@@ -4435,11 +4435,13 @@ function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighI
             if (demandDryup && currentBar.high < prevSwingBar.low && cob &&
                 distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
                 data[currentSwingHighIndex].algo = SIGNAL_PULLBACK_SELL;
-                data[currentIndex].marketStructure = {
-                    swing: Swing.Down,
-                    confirmationBarIndex: currentIndex,
-                    previousSwingIndex: currentSwingHighIndex
-                };
+                if (!realtime) {
+                    data[currentIndex].marketStructure = {
+                        swing: Swing.Down,
+                        confirmationBarIndex: currentIndex,
+                        previousSwingIndex: currentSwingHighIndex
+                    };
+                }
                 algoCount++;
             }
         }
@@ -4452,11 +4454,13 @@ function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighI
             else {
                 data[currentSwingHighIndex].algo = SIGNAL_UPTHRUST;
             }
-            data[currentIndex].marketStructure = {
-                swing: Swing.Down,
-                confirmationBarIndex: currentIndex,
-                previousSwingIndex: currentSwingHighIndex
-            };
+            if (!realtime) {
+                data[currentIndex].marketStructure = {
+                    swing: Swing.Down,
+                    confirmationBarIndex: currentIndex,
+                    previousSwingIndex: currentSwingHighIndex
+                };
+            }
             algoCount++;
         }
         if (currentDeltaVolume < prevDeltaVolume && prevDeltaVolume < prevprevDeltaVolume && distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
@@ -4466,16 +4470,18 @@ function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighI
             else {
                 data[currentSwingHighIndex].algo = SIGNAL_STOOGE_SELL;
             }
-            data[currentIndex].marketStructure = {
-                swing: Swing.Down,
-                confirmationBarIndex: currentIndex,
-                previousSwingIndex: currentSwingHighIndex
-            };
+            if (!realtime) {
+                data[currentIndex].marketStructure = {
+                    swing: Swing.Down,
+                    confirmationBarIndex: currentIndex,
+                    previousSwingIndex: currentSwingHighIndex
+                };
+            }
             algoCount++;
         }
     }
 }
-function calculateBuyAlgo(currentIndex, currentSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data) {
+function calculateBuyAlgo(currentIndex, currentSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data, realtime) {
     var size = p_lastSwingLowIndices.length;
     var algoCount = 0;
     if (size > LIMIT_SWING_COMPARISON) {
@@ -4501,11 +4507,13 @@ function calculateBuyAlgo(currentIndex, currentSwingLowIndex, p_lastSwingLowIndi
             if (supplyDryup && currentBar.low > prevSwingBar.high && cob &&
                 distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
                 data[currentSwingLowIndex].algo = SIGNAL_PULLBACK_BUY;
-                data[currentIndex].marketStructure = {
-                    swing: Swing.Up,
-                    confirmationBarIndex: currentIndex,
-                    previousSwingIndex: currentSwingLowIndex
-                };
+                if (!realtime) {
+                    data[currentIndex].marketStructure = {
+                        swing: Swing.Up,
+                        confirmationBarIndex: currentIndex,
+                        previousSwingIndex: currentSwingLowIndex
+                    };
+                }
                 algoCount++;
             }
         }
@@ -4518,11 +4526,13 @@ function calculateBuyAlgo(currentIndex, currentSwingLowIndex, p_lastSwingLowIndi
             else {
                 data[currentSwingLowIndex].algo = SIGNAL_SPRING;
             }
-            data[currentIndex].marketStructure = {
-                swing: Swing.Up,
-                confirmationBarIndex: currentIndex,
-                previousSwingIndex: currentSwingLowIndex
-            };
+            if (!realtime) {
+                data[currentIndex].marketStructure = {
+                    swing: Swing.Up,
+                    confirmationBarIndex: currentIndex,
+                    previousSwingIndex: currentSwingLowIndex
+                };
+            }
             algoCount++;
         }
         if (currentDeltaVolume > prevDeltaVolume && prevDeltaVolume > prevprevDeltaVolume &&
@@ -4533,11 +4543,13 @@ function calculateBuyAlgo(currentIndex, currentSwingLowIndex, p_lastSwingLowIndi
             else {
                 data[currentSwingLowIndex].algo = SIGNAL_STOOGE_BUY;
             }
-            data[currentIndex].marketStructure = {
-                swing: Swing.Up,
-                confirmationBarIndex: currentIndex,
-                previousSwingIndex: currentSwingLowIndex
-            };
+            if (!realtime) { // different from other indicators
+                data[currentIndex].marketStructure = {
+                    swing: Swing.Up,
+                    confirmationBarIndex: currentIndex,
+                    previousSwingIndex: currentSwingLowIndex
+                };
+            }
             algoCount++;
         }
     }
@@ -4571,16 +4583,16 @@ function swingTrendUp(i, swingDirection, p_lastSwingLowIndices, p_lastSwingHighI
         }
         // let price: number = data[lastSwingLowIndex].low;
         swingDirection.value = Swing.Up;
-        calculateSwingDown(i, lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data);
+        calculateSwingDown(i, lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data, false);
         // drawLabel(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, lastSwingLowIndex, price, DownText, high, low, time, Array_Atr);
         p_lastSwingLowIndices.push(lastSwingLowIndex); // add later we compare new low to previous 2 lows
     }
 }
-function calculateSwingDown(currentIndex, lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data) {
+function calculateSwingDown(currentIndex, lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data, realtime) {
     if (lastSwingLowIndex > lastSwingHighIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
         lastSwingHighIndex !== INDEX_START_SEARCH) {
         calculateAccumulatedVolumeSwingDown(lastSwingLowIndex, lastSwingHighIndex, data);
-        calculateBuyAlgo(currentIndex, lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data);
+        calculateBuyAlgo(currentIndex, lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data, realtime);
     }
 }
 function calculateAccumulatedVolumeSwingDown(lastSwingLowIndex, lastSwingHighIndex, data) {
@@ -4624,15 +4636,15 @@ function swingTrendDown(i, swingDirection, p_lastSwingHighIndices, p_lastSwingLo
         }
         // let price: number = data[lastSwingHighIndex].height;
         swingDirection.value = Swing.Down;
-        calculateSwingUp(i, lastSwingHighIndex, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data);
+        calculateSwingUp(i, lastSwingHighIndex, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data, false);
         p_lastSwingHighIndices.push(lastSwingHighIndex); // add later we compare new high to previous 2 highs
     }
 }
-function calculateSwingUp(currentIndex, lastSwingHighIndex, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data) {
+function calculateSwingUp(currentIndex, lastSwingHighIndex, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data, realtime) {
     if (lastSwingHighIndex > lastSwingLowIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
         lastSwingHighIndex !== INDEX_START_SEARCH) {
         calculateAccumulatedVolumeSwingUp(lastSwingHighIndex, lastSwingLowIndex, data);
-        calculateSellAlgo(currentIndex, lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data);
+        calculateSellAlgo(currentIndex, lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data, realtime);
     }
 }
 function calculateAccumulatedVolumeSwingUp(lastSwingHighIndex, lastSwingLowIndex, data) {
@@ -4770,7 +4782,7 @@ function calculateRealtimeSwing(i, swingDirection, p_lastSwingHighIndices, p_las
         }
         else {
             dataList[prevTrendingBarIndex.value].high;
-            calculateSwingUp(i, prevTrendingBarIndex.value, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, dataList);
+            calculateSwingUp(i, prevTrendingBarIndex.value, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, dataList, true);
             // drawLabelRealtime(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, drawData, prevTrendingBarIndex, price, UpText, high, low, time, Array_Atr);
         }
     }
@@ -4798,7 +4810,7 @@ function calculateRealtimeSwing(i, swingDirection, p_lastSwingHighIndices, p_las
         }
         else {
             dataList[prevTrendingBarIndex.value].low;
-            calculateSwingDown(i, prevTrendingBarIndex.value, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, dataList);
+            calculateSwingDown(i, prevTrendingBarIndex.value, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, dataList, true);
             // drawLabelRealtime(Array_Volume,
             //   Array_DeltaVolume, Array_Signal, Array_Signal2,
             //   drawData, prevTrendingBarIndex, price,
