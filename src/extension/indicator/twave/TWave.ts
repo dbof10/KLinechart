@@ -276,16 +276,15 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
   }
 
   return dataList.map((e: TWaveKLineData, index: number) => {
-    const twave: TWaveBar = { index: index.toString() };
-    if (e.totalVolume !== undefined && e.totalDeltaVolume !== undefined) {
+    const twave: TWaveBar = {index: index.toString()};
+    if (e.marketStructure) {
+      twave.metaData = getTradeIfSignalPresent(e, dataList);
+    } else if (e.totalVolume !== undefined && e.totalDeltaVolume !== undefined) {
       twave.totalVolume = formatBigNumber(e.totalVolume);
       twave.totalDeltaVolume = formatBigNumber(e.totalDeltaVolume);
       twave.textPosition = e.textPosition;
       const signal1 = signalToString(e.algo);
       const signal2 = signalToString(e.algo2);
-      if(e.marketStructure) {
-        twave.metaData = getTradeIfSignalPresent(e, dataList);
-      }
       twave.algo = signal1;
       twave.secondAlgo = signal2;
     }
@@ -377,7 +376,7 @@ const TWave: IndicatorTemplate<TWaveBar> = {
   calcParams: [2, 0],
   calc: (dataList: KLineData[], indicator: Indicator<TWaveBar>) => {
 
-    const { calcParams: params } = indicator;
+    const {calcParams: params} = indicator;
     const config: TWaveConfiguration = toWaveConfiguration(params);
 
     const extendedData: TWaveKLineData[] = [];
@@ -411,13 +410,13 @@ const TWave: IndicatorTemplate<TWaveBar> = {
            xAxis,
            yAxis,
          }) => {
-    const { from, to } = visibleRange;
+    const {from, to} = visibleRange;
 
     const fontSize = 14;
     ctx.font = `${fontSize}px Helvetica Neue`;
     ctx.textAlign = "center";
     const result = indicator.result;
-    const { calcParams: params } = indicator;
+    const {calcParams: params} = indicator;
     const config: TWaveConfiguration = toWaveConfiguration(params);
 
     for (let i = from; i < to; i++) {

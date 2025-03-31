@@ -5051,15 +5051,15 @@ function onRender(dataList, highs, lows, closes, config) {
     }
     return dataList.map(function (e, index) {
         var twave = { index: index.toString() };
-        if (e.totalVolume !== undefined && e.totalDeltaVolume !== undefined) {
+        if (e.marketStructure) {
+            twave.metaData = getTradeIfSignalPresent(e, dataList);
+        }
+        else if (e.totalVolume !== undefined && e.totalDeltaVolume !== undefined) {
             twave.totalVolume = formatBigNumber(e.totalVolume);
             twave.totalDeltaVolume = formatBigNumber(e.totalDeltaVolume);
             twave.textPosition = e.textPosition;
             var signal1 = signalToString(e.algo);
             var signal2 = signalToString(e.algo2);
-            if (e.marketStructure) {
-                twave.metaData = getTradeIfSignalPresent(e, dataList);
-            }
             twave.algo = signal1;
             twave.secondAlgo = signal2;
         }

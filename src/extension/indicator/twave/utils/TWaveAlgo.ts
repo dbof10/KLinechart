@@ -56,10 +56,11 @@ export function calculateSellAlgo(
       if (demandDryup && currentBar.high < prevSwingBar.low && cob &&
         distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
         data[currentSwingHighIndex].algo = SIGNAL_PULLBACK_SELL;
-        if(!realtime) {
+
+        if (!realtime) {
           data[currentIndex].marketStructure = {
             swing: Swing.Down,
-            confirmationBarIndex : currentIndex,
+            confirmationBarIndex: currentIndex,
             previousSwingIndex: currentSwingHighIndex
           }
         }
@@ -75,10 +76,10 @@ export function calculateSellAlgo(
       } else {
         data[currentSwingHighIndex].algo = SIGNAL_UPTHRUST;
       }
-      if(!realtime) {
+      if (!realtime) {
         data[currentIndex].marketStructure = {
           swing: Swing.Down,
-          confirmationBarIndex : currentIndex,
+          confirmationBarIndex: currentIndex,
           previousSwingIndex: currentSwingHighIndex
         }
       }
@@ -91,10 +92,10 @@ export function calculateSellAlgo(
       } else {
         data[currentSwingHighIndex].algo = SIGNAL_STOOGE_SELL;
       }
-      if(!realtime) {
+      if (!realtime) {
         data[currentIndex].marketStructure = {
           swing: Swing.Down,
-          confirmationBarIndex : currentIndex,
+          confirmationBarIndex: currentIndex,
           previousSwingIndex: currentSwingHighIndex
         }
       }
@@ -105,7 +106,7 @@ export function calculateSellAlgo(
 
 
 export function calculateBuyAlgo(
-  currentIndex : number,
+  currentIndex: number,
   currentSwingLowIndex: number,
   p_lastSwingLowIndices: number[],
   p_lastSwingHighIndices: number[],
@@ -144,10 +145,10 @@ export function calculateBuyAlgo(
       if (supplyDryup && currentBar.low > prevSwingBar.high && cob &&
         distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
         data[currentSwingLowIndex].algo = SIGNAL_PULLBACK_BUY;
-        if(!realtime) {
+        if (!realtime) {
           data[currentIndex].marketStructure = {
             swing: Swing.Up,
-            confirmationBarIndex : currentIndex,
+            confirmationBarIndex: currentIndex,
             previousSwingIndex: currentSwingLowIndex
           }
         }
@@ -163,10 +164,10 @@ export function calculateBuyAlgo(
       } else {
         data[currentSwingLowIndex].algo = SIGNAL_SPRING;
       }
-      if(!realtime) {
+      if (!realtime) {
         data[currentIndex].marketStructure = {
           swing: Swing.Up,
-          confirmationBarIndex : currentIndex,
+          confirmationBarIndex: currentIndex,
           previousSwingIndex: currentSwingLowIndex
         }
       }
@@ -174,16 +175,16 @@ export function calculateBuyAlgo(
     }
 
     if (currentDeltaVolume > prevDeltaVolume && prevDeltaVolume > prevprevDeltaVolume &&
-      distanceToNearPivot > LIMIT_BARS_FORM_ALGO ) {
+      distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
       if (algoCount > 0) {
         data[currentSwingLowIndex].algo2 = SIGNAL_STOOGE_BUY;
       } else {
         data[currentSwingLowIndex].algo = SIGNAL_STOOGE_BUY;
       }
-      if(!realtime) { // different from other indicators
+      if (!realtime) { // different from other indicators
         data[currentIndex].marketStructure = {
           swing: Swing.Up,
-          confirmationBarIndex : currentIndex,
+          confirmationBarIndex: currentIndex,
           previousSwingIndex: currentSwingLowIndex
         }
       }
