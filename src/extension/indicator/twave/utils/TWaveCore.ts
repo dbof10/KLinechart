@@ -85,8 +85,8 @@ export function calculateRealtimeSwing(
     } else {
       const price = dataList[prevTrendingBarIndex.value].high;
 
-     calculateSwingUp(prevTrendingBarIndex.value, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, dataList);
-     // drawLabelRealtime(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, drawData, prevTrendingBarIndex, price, UpText, high, low, time, Array_Atr);
+      calculateSwingUp(i, prevTrendingBarIndex.value, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, dataList);
+      // drawLabelRealtime(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, drawData, prevTrendingBarIndex, price, UpText, high, low, time, Array_Atr);
     }
   } else if (swingDirection.value === Swing.Down) {
     let anchorPointIndex = INDEX_START_SEARCH;
@@ -121,7 +121,7 @@ export function calculateRealtimeSwing(
     } else {
       const price = dataList[prevTrendingBarIndex.value].low;
 
-      calculateSwingDown(
+      calculateSwingDown(i,
         prevTrendingBarIndex.value, lastSwingHighIndex, p_lastSwingLowIndices,
         p_lastSwingHighIndices, dataList);
       // drawLabelRealtime(Array_Volume,

@@ -4760,7 +4760,7 @@ function calculateRealtimeSwing(i, swingDirection, p_lastSwingHighIndices, p_las
         }
         else {
             dataList[prevTrendingBarIndex.value].high;
-            calculateSwingUp(prevTrendingBarIndex.value, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, dataList);
+            calculateSwingUp(i, prevTrendingBarIndex.value, lastSwingLowIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, dataList);
             // drawLabelRealtime(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, drawData, prevTrendingBarIndex, price, UpText, high, low, time, Array_Atr);
         }
     }
@@ -4788,7 +4788,7 @@ function calculateRealtimeSwing(i, swingDirection, p_lastSwingHighIndices, p_las
         }
         else {
             dataList[prevTrendingBarIndex.value].low;
-            calculateSwingDown(prevTrendingBarIndex.value, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, dataList);
+            calculateSwingDown(i, prevTrendingBarIndex.value, lastSwingHighIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, dataList);
             // drawLabelRealtime(Array_Volume,
             //   Array_DeltaVolume, Array_Signal, Array_Signal2,
             //   drawData, prevTrendingBarIndex, price,
