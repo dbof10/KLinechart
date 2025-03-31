@@ -63,7 +63,7 @@ export function swingTrendUp(
   }
 }
 
-function calculateSwingDown(lastSwingLowIndex: number,
+export function calculateSwingDown(lastSwingLowIndex: number,
                             lastSwingHighIndex: number,
                             p_lastSwingLowIndices: number[],
                             p_lastSwingHighIndices: number[],
@@ -77,7 +77,7 @@ function calculateSwingDown(lastSwingLowIndex: number,
   }
 }
 
-function calculateAccumulatedVolumeSwingDown(
+export function calculateAccumulatedVolumeSwingDown(
   lastSwingLowIndex: number,
   lastSwingHighIndex: number,
   data: TWaveKLineData[]): void {
@@ -149,7 +149,7 @@ export function swingTrendDown(
   }
 }
 
-function calculateSwingUp(lastSwingHighIndex: number,
+export function calculateSwingUp(lastSwingHighIndex: number,
                           lastSwingLowIndex: number,
                           p_lastSwingHighIndices: number[],
                           p_lastSwingLowIndices: number[],
@@ -163,7 +163,7 @@ function calculateSwingUp(lastSwingHighIndex: number,
   }
 }
 
-function calculateAccumulatedVolumeSwingUp(lastSwingHighIndex: number,
+export function calculateAccumulatedVolumeSwingUp(lastSwingHighIndex: number,
                                            lastSwingLowIndex: number,
                                            data: TWaveKLineData[]): void {
 
@@ -298,6 +298,4 @@ export function canChangeUpInExceptionConditions(
     return cond3;
   }
 }
-
-
 

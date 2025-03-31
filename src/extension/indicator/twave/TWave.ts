@@ -1,10 +1,10 @@
-import { Indicator, IndicatorTemplate } from "../../../component/Indicator";
+import {Indicator, IndicatorTemplate} from "../../../component/Indicator";
 import KLineData from "../../../common/KLineData";
-import { getBarByIndex } from "./utils/TWaveHelper";
-import { Bar } from "./model/Bar";
-import { calculateRealtimeSwing, getBarType } from "./utils/TWaveCore";
-import { BarType } from "./model/BarType";
-import { Swing } from "./model/Swing";
+import {getBarByIndex} from "./utils/TWaveHelper";
+import {Bar} from "./model/Bar";
+import {calculateRealtimeSwing, getBarType} from "./utils/TWaveCore";
+import {BarType} from "./model/BarType";
+import {Swing} from "./model/Swing";
 import {
   canChangeDownInExceptionConditions,
   canChangeUpInExceptionConditions,
@@ -14,12 +14,11 @@ import {
   swingTrendDown,
   swingTrendUp,
 } from "./utils/TWaveSwing";
-import { EnumWrapper } from "./model/EnumWrapper";
-import { NumberWrapper } from "./model/NumberWrapper";
-import { TWaveKLineData } from "./model/TWaveKLineData";
-import { DrawData } from "./model/DrawData";
-import { TextPosition } from "./model/TextPosition";
-import { formatBigNumber } from "../../../common/utils/format";
+import {EnumWrapper} from "./model/EnumWrapper";
+import {NumberWrapper} from "./model/NumberWrapper";
+import {TWaveKLineData} from "./model/TWaveKLineData";
+import {TextPosition} from "./model/TextPosition";
+import {formatBigNumber} from "../../../common/utils/format";
 import {
   SIGNAL_PULLBACK_BUY,
   SIGNAL_PULLBACK_SELL,
@@ -28,10 +27,10 @@ import {
   SIGNAL_STOOGE_SELL,
   SIGNAL_UPTHRUST,
 } from "./utils/TWaveAlgo";
-import { COLOR_DEMAND, COLOR_SUPPLY } from "../../../utils/ColorConstant";
-import { TWaveConfiguration } from "./model/TWaveConfiguration";
-import { getTradeIfSignalPresent } from "./utils/TradeUtils";
-import { TWaveBar } from "./model/TWaveBar";
+import {COLOR_DEMAND, COLOR_SUPPLY} from "../../../utils/ColorConstant";
+import {TWaveConfiguration} from "./model/TWaveConfiguration";
+import {getTradeIfSignalPresent} from "./utils/TradeUtils";
+import {TWaveBar} from "./model/TWaveBar";
 
 function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], closes: number[],
                   config: TWaveConfiguration): TWaveBar[] {
@@ -45,7 +44,6 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
   const prevTrendingBarIndex: NumberWrapper = new NumberWrapper(INDEX_START_SEARCH);
   const p_lastSwingHighIndices: number[] = [];
   const p_lastSwingLowIndices: number[] = [];
-  const drawData: DrawData = {};
 
   for (let index = 0; index < dataList.length; index++) {
 
@@ -57,11 +55,11 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
     const prevBar: Bar = getBarByIndex(dataList[index - 1]);
     const type: BarType = getBarType(currentBar, prevBar);
 
-    calculateRealtimeSwing(index, SwingLength,
+    calculateRealtimeSwing(index,
       swingDirection,
-      p_lastSwingHighIndices, p_lastSwingLowIndices, drawData,
+      p_lastSwingHighIndices, p_lastSwingLowIndices,
       prevTrendingBarIndex,
-      highs, lows);
+      dataList);
 
     if (swingDirection.value === Swing.Up && p_lastSwingLowIndices.length !== 0) {
 
