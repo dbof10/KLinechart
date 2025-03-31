@@ -4457,6 +4457,11 @@ function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighI
             else {
                 data[currentSwingHighIndex].algo = SIGNAL_UPTHRUST;
             }
+            data[currentIndex].marketStructure = {
+                swing: Swing.Down,
+                confirmationBarIndex: currentIndex,
+                previousSwingIndex: currentSwingHighIndex
+            };
             algoCount++;
         }
         if (currentDeltaVolume < prevDeltaVolume && prevDeltaVolume < prevprevDeltaVolume && distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
@@ -4466,6 +4471,11 @@ function calculateSellAlgo(currentIndex, currentSwingHighIndex, p_lastSwingHighI
             else {
                 data[currentSwingHighIndex].algo = SIGNAL_STOOGE_SELL;
             }
+            data[currentIndex].marketStructure = {
+                swing: Swing.Down,
+                confirmationBarIndex: currentIndex,
+                previousSwingIndex: currentSwingHighIndex
+            };
             algoCount++;
         }
     }

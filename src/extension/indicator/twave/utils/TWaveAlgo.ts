@@ -72,6 +72,11 @@ export function calculateSellAlgo(
       } else {
         data[currentSwingHighIndex].algo = SIGNAL_UPTHRUST;
       }
+      data[currentIndex].marketStructure = {
+        swing: Swing.Down,
+        confirmationBarIndex : currentIndex,
+        previousSwingIndex: currentSwingHighIndex
+      }
       algoCount++;
     }
 
@@ -80,6 +85,11 @@ export function calculateSellAlgo(
         data[currentSwingHighIndex].algo2 = SIGNAL_STOOGE_SELL;
       } else {
         data[currentSwingHighIndex].algo = SIGNAL_STOOGE_SELL;
+      }
+      data[currentIndex].marketStructure = {
+        swing: Swing.Down,
+        confirmationBarIndex : currentIndex,
+        previousSwingIndex: currentSwingHighIndex
       }
       algoCount++;
     }
@@ -148,7 +158,6 @@ export function calculateBuyAlgo(
         confirmationBarIndex : currentIndex,
         previousSwingIndex: currentSwingLowIndex
       }
-
       algoCount++;
     }
 
