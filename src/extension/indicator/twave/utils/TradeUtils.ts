@@ -1,23 +1,29 @@
-import {TextPosition} from "../model/TextPosition";
 import {TWaveKLineData} from "../model/TWaveKLineData";
 import {Trade} from "../../model/Trade";
+import {Swing} from "../model/Swing";
 
 export function getTradeIfSignalPresent(
   e: TWaveKLineData,
-  signal1: string,
-  signal2: string
+  dataList: TWaveKLineData[],
 ): Trade | undefined {
-  const current = e;
+  const current = e.marketStructure;
 
-  const hasSignal = signal1.length > 0 || signal2.length > 0;
-  if (!hasSignal) return undefined;
+  if (!current) return undefined;
 
-  const direction = current.textPosition === TextPosition.Up ? "SELL" : "BUY";
-  const entry = current.close;
+  const direction = current.swing === Swing.Down ? "SELL" : "BUY";
+  const entry = e.close;
+
+  let stoploss :number =0 ;
+  if(current.swing === Swing.Down) {
+    stoploss = dataList[current.previousSwingIndex].high
+  } else if(current.swing === Swing.Up) {
+    stoploss = dataList[current.previousSwingIndex].low
+  }
 
   const metaData: Trade = {
     direction,
     entry,
+    stoploss
   };
 
   return metaData

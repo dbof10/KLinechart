@@ -1,13 +1,13 @@
-import { Swing } from "../model/Swing";
-import { getBarByIndex, getIndexOfHighestValue, getIndexOfLowestValue } from "./TWaveHelper";
-import { EnumWrapper } from "../model/EnumWrapper";
-import { NumberWrapper } from "../model/NumberWrapper";
-import { TWaveKLineData } from "../model/TWaveKLineData";
-import { BarType } from "../model/BarType";
-import { Bar } from "../model/Bar";
+import {Swing} from "../model/Swing";
+import {getBarByIndex, getIndexOfHighestValue, getIndexOfLowestValue} from "./TWaveHelper";
+import {EnumWrapper} from "../model/EnumWrapper";
+import {NumberWrapper} from "../model/NumberWrapper";
+import {TWaveKLineData} from "../model/TWaveKLineData";
+import {BarType} from "../model/BarType";
+import {Bar} from "../model/Bar";
 import KLineData from "../../../../common/KLineData";
-import { TextPosition } from "../model/TextPosition";
-import { calculateBuyAlgo, calculateSellAlgo } from "./TWaveAlgo";
+import {TextPosition} from "../model/TextPosition";
+import {calculateBuyAlgo, calculateSellAlgo} from "./TWaveAlgo";
 
 export const INDEX_START = 20;
 export const INDEX_START_SEARCH = -1;
@@ -55,7 +55,7 @@ export function swingTrendUp(
     swingDirection.value = Swing.Up;
 
 
-    calculateSwingDown(lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices,
+    calculateSwingDown(i,lastSwingLowIndex, lastSwingHighIndex, p_lastSwingLowIndices,
       p_lastSwingHighIndices, data);
     // drawLabel(Array_Volume, Array_DeltaVolume, Array_Signal, Array_Signal2, lastSwingLowIndex, price, DownText, high, low, time, Array_Atr);
 
@@ -63,17 +63,18 @@ export function swingTrendUp(
   }
 }
 
-export function calculateSwingDown(lastSwingLowIndex: number,
-                            lastSwingHighIndex: number,
-                            p_lastSwingLowIndices: number[],
-                            p_lastSwingHighIndices: number[],
-                            data: TWaveKLineData[]): void {
+export function calculateSwingDown(currentIndex: number,
+                                   lastSwingLowIndex: number,
+                                   lastSwingHighIndex: number,
+                                   p_lastSwingLowIndices: number[],
+                                   p_lastSwingHighIndices: number[],
+                                   data: TWaveKLineData[]): void {
 
   if (lastSwingLowIndex > lastSwingHighIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
     lastSwingHighIndex !== INDEX_START_SEARCH) {
 
     calculateAccumulatedVolumeSwingDown(lastSwingLowIndex, lastSwingHighIndex, data);
-    calculateBuyAlgo(lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data);
+    calculateBuyAlgo(currentIndex, lastSwingLowIndex, p_lastSwingLowIndices, p_lastSwingHighIndices, data);
   }
 }
 
@@ -142,30 +143,32 @@ export function swingTrendDown(
     // let price: number = data[lastSwingHighIndex].height;
     swingDirection.value = Swing.Down;
 
-    calculateSwingUp(lastSwingHighIndex, lastSwingLowIndex,
+    calculateSwingUp(i, lastSwingHighIndex, lastSwingLowIndex,
       p_lastSwingHighIndices, p_lastSwingLowIndices, data);
 
     p_lastSwingHighIndices.push(lastSwingHighIndex); // add later we compare new high to previous 2 highs
   }
 }
 
-export function calculateSwingUp(lastSwingHighIndex: number,
-                          lastSwingLowIndex: number,
-                          p_lastSwingHighIndices: number[],
-                          p_lastSwingLowIndices: number[],
-                          data: TWaveKLineData[]): void {
+export function calculateSwingUp(
+  currentIndex: number,
+  lastSwingHighIndex: number,
+  lastSwingLowIndex: number,
+  p_lastSwingHighIndices: number[],
+  p_lastSwingLowIndices: number[],
+  data: TWaveKLineData[]): void {
 
   if (lastSwingHighIndex > lastSwingLowIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
     lastSwingHighIndex !== INDEX_START_SEARCH) {
 
     calculateAccumulatedVolumeSwingUp(lastSwingHighIndex, lastSwingLowIndex, data);
-    calculateSellAlgo(lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data);
+    calculateSellAlgo(currentIndex, lastSwingHighIndex, p_lastSwingHighIndices, p_lastSwingLowIndices, data);
   }
 }
 
 export function calculateAccumulatedVolumeSwingUp(lastSwingHighIndex: number,
-                                           lastSwingLowIndex: number,
-                                           data: TWaveKLineData[]): void {
+                                                  lastSwingLowIndex: number,
+                                                  data: TWaveKLineData[]): void {
 
   if (lastSwingHighIndex > lastSwingLowIndex && lastSwingLowIndex !== INDEX_START_SEARCH &&
     lastSwingHighIndex !== INDEX_START_SEARCH) {

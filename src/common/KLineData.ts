@@ -19,7 +19,7 @@ export default interface KLineData {
   high: number
   low: number
   close: number
-  volume?: number
+  volume: number
   turnover?: number
   bidVol?: number
   askVol?: number

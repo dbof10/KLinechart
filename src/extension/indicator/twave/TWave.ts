@@ -283,8 +283,8 @@ function onRender(dataList: TWaveKLineData[], highs: number[], lows: number[], c
       twave.textPosition = e.textPosition;
       const signal1 = signalToString(e.algo);
       const signal2 = signalToString(e.algo2);
-      if (signal1.length > 0 || signal2.length > 0) {
-        twave.metaData = getTradeIfSignalPresent(e, signal1, signal2);
+      if(e.marketStructure) {
+        twave.metaData = getTradeIfSignalPresent(e, dataList);
       }
       twave.algo = signal1;
       twave.secondAlgo = signal2;

@@ -1,5 +1,6 @@
-import { getBarByIndex } from "./TWaveHelper";
-import { TWaveKLineData } from "../model/TWaveKLineData";
+import {getBarByIndex} from "./TWaveHelper";
+import {TWaveKLineData} from "../model/TWaveKLineData";
+import {Swing} from "../model/Swing";
 
 const LIMIT_SWING_COMPARISON = 2;
 
@@ -13,6 +14,7 @@ export const LIMIT_BARS_FORM_ALGO = 2 // min distance to show algo to avoid nois
 
 
 export function calculateSellAlgo(
+  currentIndex: number,
   currentSwingHighIndex: number,
   p_lastSwingHighIndices: number[],
   p_lastSwingLowIndices: number[],
@@ -24,7 +26,7 @@ export function calculateSellAlgo(
 
   let algoCount = 0;
   if (size > LIMIT_SWING_COMPARISON) {
-    const prevIndex = p_lastSwingHighIndices.pop();
+    const prevIndex: number = p_lastSwingHighIndices.pop()!;
     const prevprevIndex = p_lastSwingHighIndices[p_lastSwingHighIndices.length - 1];
     p_lastSwingHighIndices.push(prevIndex);
 
@@ -40,7 +42,7 @@ export function calculateSellAlgo(
 
     // Pullback algo
     if (p_lastSwingLowIndices.length > LIMIT_SWING_COMPARISON) {
-      const prevLowIndex = p_lastSwingLowIndices.pop();
+      const prevLowIndex: number = p_lastSwingLowIndices.pop()!;
       const prevprevLowIndex = p_lastSwingLowIndices[p_lastSwingLowIndices.length - 1];
       p_lastSwingLowIndices.push(prevLowIndex);
 
@@ -53,6 +55,11 @@ export function calculateSellAlgo(
       if (demandDryup && currentBar.high < prevSwingBar.low && cob &&
         distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
         data[currentSwingHighIndex].algo = SIGNAL_PULLBACK_SELL;
+        data[currentIndex].marketStructure = {
+          swing: Swing.Down,
+          confirmationBarIndex : currentIndex,
+          previousSwingIndex: currentSwingHighIndex
+        }
         algoCount++;
       }
     }
@@ -81,6 +88,7 @@ export function calculateSellAlgo(
 
 
 export function calculateBuyAlgo(
+  currentIndex : number,
   currentSwingLowIndex: number,
   p_lastSwingLowIndices: number[],
   p_lastSwingHighIndices: number[],
@@ -91,7 +99,7 @@ export function calculateBuyAlgo(
 
   let algoCount = 0;
   if (size > LIMIT_SWING_COMPARISON) {
-    const prevIndex = p_lastSwingLowIndices.pop();
+    const prevIndex: number = p_lastSwingLowIndices.pop()!;
     const prevprevIndex = p_lastSwingLowIndices[p_lastSwingLowIndices.length - 1];
     p_lastSwingLowIndices.push(prevIndex);
 
@@ -106,7 +114,7 @@ export function calculateBuyAlgo(
     // Pullback algo
     const distanceToNearPivot = currentSwingLowIndex - p_lastSwingHighIndices[p_lastSwingHighIndices.length - 1];
     if (p_lastSwingHighIndices.length > LIMIT_SWING_COMPARISON) {
-      const prevHighIndex = p_lastSwingHighIndices.pop();
+      const prevHighIndex: number = p_lastSwingHighIndices.pop()!;
       const prevprevHighIndex = p_lastSwingHighIndices[p_lastSwingHighIndices.length - 1];
       p_lastSwingHighIndices.push(prevHighIndex);
 
@@ -118,6 +126,11 @@ export function calculateBuyAlgo(
       if (supplyDryup && currentBar.low > prevSwingBar.high && cob &&
         distanceToNearPivot > LIMIT_BARS_FORM_ALGO) {
         data[currentSwingLowIndex].algo = SIGNAL_PULLBACK_BUY;
+        data[currentIndex].marketStructure = {
+          swing: Swing.Up,
+          confirmationBarIndex : currentIndex,
+          previousSwingIndex: currentSwingLowIndex
+        }
         algoCount++;
       }
     }
@@ -130,6 +143,12 @@ export function calculateBuyAlgo(
       } else {
         data[currentSwingLowIndex].algo = SIGNAL_SPRING;
       }
+      data[currentIndex].marketStructure = {
+        swing: Swing.Up,
+        confirmationBarIndex : currentIndex,
+        previousSwingIndex: currentSwingLowIndex
+      }
+
       algoCount++;
     }
 
@@ -139,6 +158,11 @@ export function calculateBuyAlgo(
         data[currentSwingLowIndex].algo2 = SIGNAL_STOOGE_BUY;
       } else {
         data[currentSwingLowIndex].algo = SIGNAL_STOOGE_BUY;
+      }
+      data[currentIndex].marketStructure = {
+        swing: Swing.Up,
+        confirmationBarIndex : currentIndex,
+        previousSwingIndex: currentSwingLowIndex
       }
       algoCount++;
     }
