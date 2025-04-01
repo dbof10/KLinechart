@@ -20,9 +20,8 @@ interface Ema {
   ema1?: number
   ema2?: number
   ema3?: number
-  metaData?: {
-    [key: string]: Trade; // key = 'ema1' | 'ema2' | 'ema3'
-  };
+  metaData?: Trade; // ✅ new
+
 }
 
 /**
@@ -56,11 +55,7 @@ const exponentialMovingAverage: IndicatorTemplate<Ema> = {
       const close = kLineData.close;
       closeSum += close;
 
-      const metaData: Record<string, Trade> = {};
-
       params.forEach((p: number, index: number) => {
-        const key = figures[index].key; // 'ema1', 'ema2', 'ema3'
-
         if (i >= p - 1) {
           if (i > p - 1) {
             emaValues[index] = (2 * close + (p - 1) * emaValues[index]) / (p + 1);
@@ -68,29 +63,36 @@ const exponentialMovingAverage: IndicatorTemplate<Ema> = {
             emaValues[index] = closeSum / p;
           }
 
-          const currentEma = emaValues[index];
-          ema[key] = currentEma;
-
-          if (i > 0) {
-            const prevClose = dataList[i - 1].close;
-            const currClose = close;
-            const prevEma = emaValues[index]; // same as current (previous not stored, simplified)
-
-            // Cross above = BUY
-            if (prevClose < prevEma && currClose > currentEma) {
-              metaData[key] = { direction: "BUY", entry: close };
-            }
-
-            // Cross below = SELL
-            else if (prevClose > prevEma && currClose < currentEma) {
-              metaData[key] = { direction: "SELL", entry: close };
-            }
-          }
+          const key = figures[index].key;
+          ema[key] = emaValues[index];
         }
       });
 
-      if (Object.keys(metaData).length > 0) {
-        ema.metaData = metaData;
+      // === Add trade signal ===
+      // Use first EMA for simplicity
+      const currentEma = ema.ema1;
+      const prev = i > 0 ? dataList[i - 1] : null;
+      const prevEma = i > 0 && figures[0].key in prev ? (prev as any)[figures[0].key] : undefined;
+
+      if (currentEma && prevEma !== undefined) {
+        const prevClose = dataList[i - 1].close;
+        const currClose = close;
+
+        // Cross above = BUY
+        if (prevClose < prevEma && currClose > currentEma) {
+          ema.metaData = {
+            direction: "BUY",
+            entry: close,
+          };
+        }
+
+        // Cross below = SELL
+        else if (prevClose > prevEma && currClose < currentEma) {
+          ema.metaData = {
+            direction: "SELL",
+            entry: close,
+          };
+        }
       }
 
       return ema;
