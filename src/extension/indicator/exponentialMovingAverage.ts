@@ -13,7 +13,7 @@
  */
 
 import type KLineData from '../../common/KLineData'
-import { type Indicator, type IndicatorTemplate, IndicatorSeries } from '../../component/Indicator'
+import {type Indicator, IndicatorSeries, type IndicatorTemplate} from '../../component/Indicator'
 import {Trade} from "./model/Trade";
 
 interface Ema {
@@ -36,64 +36,52 @@ const exponentialMovingAverage: IndicatorTemplate<Ema> = {
   shouldOhlc: true,
   isOverlay: true,
   figures: [
-    { key: 'ema1', title: 'EMA6: ', type: 'line' },
-    { key: 'ema2', title: 'EMA12: ', type: 'line' },
-    { key: 'ema3', title: 'EMA20: ', type: 'line' }
+    {key: 'ema1', title: 'EMA7: ', type: 'line'},
+    {key: 'ema2', title: 'EMA21: ', type: 'line'},
+    {key: 'ema3', title: 'EMA50: ', type: 'line'}
   ],
   regenerateFigures: (params: any[]) => {
     return params.map((p: number, i: number) => {
-      return { key: `ema${i + 1}`, title: `EMA${p}: `, type: 'line' }
+      return {key: `ema${i + 1}`, title: `EMA${p}: `, type: 'line'}
     })
   },
   calc: (dataList: KLineData[], indicator: Indicator<Ema>) => {
-    const { calcParams: params, figures } = indicator;
-    let closeSum = 0;
+    const {calcParams: params, figures} = indicator;
     const emaValues: number[] = [];
+    const closeSums: number[] = [0, 0, 0];
 
     return dataList.map((kLineData: KLineData, i: number) => {
       const ema: Ema = {};
       const close = kLineData.close;
-      closeSum += close;
 
       params.forEach((p: number, index: number) => {
+        const key = figures[index].key; // 'ema1', 'ema2', 'ema3'
+        closeSums[index] += close;
+
         if (i >= p - 1) {
           if (i > p - 1) {
             emaValues[index] = (2 * close + (p - 1) * emaValues[index]) / (p + 1);
           } else {
-            emaValues[index] = closeSum / p;
+            emaValues[index] = closeSums[index] / p;
           }
 
-          const key = figures[index].key;
-          ema[key] = emaValues[index];
+          const currentEma = emaValues[index];
+          ema[key] = currentEma;
+
+          // ✅ Only first EMA (ema1) can trigger metaData
+          if (index === 0 && i > 0) {
+            const prevClose = dataList[i - 1].close;
+            const prevEma = emaValues[index]; // approx previous
+            const currClose = close;
+
+            if (prevClose < prevEma && currClose > currentEma) {
+              ema.metaData = {direction: "BUY", entry: close};
+            } else if (prevClose > prevEma && currClose < currentEma) {
+              ema.metaData = {direction: "SELL", entry: close};
+            }
+          }
         }
       });
-
-      // === Add trade signal ===
-      // Use first EMA for simplicity
-      const currentEma = ema.ema1;
-      const prev = i > 0 ? dataList[i - 1] : null;
-      const prevEma = i > 0 && figures[0].key in prev ? (prev as any)[figures[0].key] : undefined;
-
-      if (currentEma && prevEma !== undefined) {
-        const prevClose = dataList[i - 1].close;
-        const currClose = close;
-
-        // Cross above = BUY
-        if (prevClose < prevEma && currClose > currentEma) {
-          ema.metaData = {
-            direction: "BUY",
-            entry: close,
-          };
-        }
-
-        // Cross below = SELL
-        else if (prevClose > prevEma && currClose < currentEma) {
-          ema.metaData = {
-            direction: "SELL",
-            entry: close,
-          };
-        }
-      }
 
       return ema;
     });

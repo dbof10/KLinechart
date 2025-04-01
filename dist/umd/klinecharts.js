@@ -3018,9 +3018,9 @@ var exponentialMovingAverage = {
     shouldOhlc: true,
     isOverlay: true,
     figures: [
-        { key: 'ema1', title: 'EMA6: ', type: 'line' },
-        { key: 'ema2', title: 'EMA12: ', type: 'line' },
-        { key: 'ema3', title: 'EMA20: ', type: 'line' }
+        { key: 'ema1', title: 'EMA7: ', type: 'line' },
+        { key: 'ema2', title: 'EMA21: ', type: 'line' },
+        { key: 'ema3', title: 'EMA50: ', type: 'line' }
     ],
     regenerateFigures: function (params) {
         return params.map(function (p, i) {
@@ -3029,47 +3029,37 @@ var exponentialMovingAverage = {
     },
     calc: function (dataList, indicator) {
         var params = indicator.calcParams, figures = indicator.figures;
-        var closeSum = 0;
         var emaValues = [];
+        var closeSums = [0, 0, 0];
         return dataList.map(function (kLineData, i) {
             var ema = {};
             var close = kLineData.close;
-            closeSum += close;
             params.forEach(function (p, index) {
+                var key = figures[index].key; // 'ema1', 'ema2', 'ema3'
+                closeSums[index] += close;
                 if (i >= p - 1) {
                     if (i > p - 1) {
                         emaValues[index] = (2 * close + (p - 1) * emaValues[index]) / (p + 1);
                     }
                     else {
-                        emaValues[index] = closeSum / p;
+                        emaValues[index] = closeSums[index] / p;
                     }
-                    var key = figures[index].key;
-                    ema[key] = emaValues[index];
+                    var currentEma = emaValues[index];
+                    ema[key] = currentEma;
+                    // ✅ Only first EMA (ema1) can trigger metaData
+                    if (index === 0 && i > 0) {
+                        var prevClose = dataList[i - 1].close;
+                        var prevEma = emaValues[index]; // approx previous
+                        var currClose = close;
+                        if (prevClose < prevEma && currClose > currentEma) {
+                            ema.metaData = { direction: "BUY", entry: close };
+                        }
+                        else if (prevClose > prevEma && currClose < currentEma) {
+                            ema.metaData = { direction: "SELL", entry: close };
+                        }
+                    }
                 }
             });
-            // === Add trade signal ===
-            // Use first EMA for simplicity
-            var currentEma = ema.ema1;
-            var prev = i > 0 ? dataList[i - 1] : null;
-            var prevEma = i > 0 && figures[0].key in prev ? prev[figures[0].key] : undefined;
-            if (currentEma && prevEma !== undefined) {
-                var prevClose = dataList[i - 1].close;
-                var currClose = close;
-                // Cross above = BUY
-                if (prevClose < prevEma && currClose > currentEma) {
-                    ema.metaData = {
-                        direction: "BUY",
-                        entry: close,
-                    };
-                }
-                // Cross below = SELL
-                else if (prevClose > prevEma && currClose < currentEma) {
-                    ema.metaData = {
-                        direction: "SELL",
-                        entry: close,
-                    };
-                }
-            }
             return ema;
         });
     }
