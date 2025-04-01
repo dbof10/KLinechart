@@ -3030,7 +3030,9 @@ var exponentialMovingAverage = {
             var ema = {};
             var close = kLineData.close;
             closeSum += close;
+            var metaData = {};
             params.forEach(function (p, index) {
+                var key = figures[index].key; // 'ema1', 'ema2', 'ema3'
                 if (i >= p - 1) {
                     if (i > p - 1) {
                         emaValues[index] = (2 * close + (p - 1) * emaValues[index]) / (p + 1);
@@ -3038,9 +3040,26 @@ var exponentialMovingAverage = {
                     else {
                         emaValues[index] = closeSum / p;
                     }
-                    ema[figures[index].key] = emaValues[index];
+                    var currentEma = emaValues[index];
+                    ema[key] = currentEma;
+                    if (i > 0) {
+                        var prevClose = dataList[i - 1].close;
+                        var currClose = close;
+                        var prevEma = emaValues[index]; // same as current (previous not stored, simplified)
+                        // Cross above = BUY
+                        if (prevClose < prevEma && currClose > currentEma) {
+                            metaData[key] = { direction: "BUY", entry: close };
+                        }
+                        // Cross below = SELL
+                        else if (prevClose > prevEma && currClose < currentEma) {
+                            metaData[key] = { direction: "SELL", entry: close };
+                        }
+                    }
                 }
             });
+            if (Object.keys(metaData).length > 0) {
+                ema.metaData = metaData;
+            }
             return ema;
         });
     }
