@@ -19,18 +19,28 @@ import type Bounding from '../common/Bounding'
 import type VisibleRange from '../common/VisibleRange'
 import type BarSpace from '../common/BarSpace'
 import type Crosshair from '../common/Crosshair'
-import { type IndicatorStyle, type IndicatorPolygonStyle, type SmoothLineStyle, type RectStyle, type TextStyle, type TooltipIconStyle, type LineStyle, type LineType, type PolygonType, type TooltipLegend } from '../common/Styles'
+import {
+  type IndicatorPolygonStyle,
+  type IndicatorStyle,
+  type LineStyle,
+  type LineType,
+  type PolygonType,
+  type RectStyle,
+  type SmoothLineStyle,
+  type TextStyle,
+  type TooltipIconStyle,
+  type TooltipLegend
+} from '../common/Styles'
 
-import { type XAxis } from './XAxis'
-import { type YAxis } from './YAxis'
+import {type XAxis} from './XAxis'
+import {type YAxis} from './YAxis'
 
-import { formatValue } from '../common/utils/format'
-import { isValid, merge, clone } from '../common/utils/typeChecks'
+import {formatValue} from '../common/utils/format'
+import {clone, isValid, merge} from '../common/utils/typeChecks'
 
-import { type ArcAttrs } from '../extension/figure/arc'
-import { type RectAttrs } from '../extension/figure/rect'
-import { type TextAttrs } from '../extension/figure/text'
-import { Alert } from "../extension/indicator/Alert";
+import {type ArcAttrs} from '../extension/figure/arc'
+import {type RectAttrs} from '../extension/figure/rect'
+import {type TextAttrs} from '../extension/figure/text'
 
 export enum IndicatorSeries {
   Normal = 'normal',

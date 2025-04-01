@@ -14,11 +14,15 @@
 
 import type KLineData from '../../common/KLineData'
 import { type Indicator, type IndicatorTemplate, IndicatorSeries } from '../../component/Indicator'
+import {Trade} from "./model/Trade";
 
 interface Ema {
   ema1?: number
   ema2?: number
   ema3?: number
+  metaData?: {
+    [key: string]: Trade; // key = 'ema1' | 'ema2' | 'ema3'
+  };
 }
 
 /**
@@ -43,25 +47,54 @@ const exponentialMovingAverage: IndicatorTemplate<Ema> = {
     })
   },
   calc: (dataList: KLineData[], indicator: Indicator<Ema>) => {
-    const { calcParams: params, figures } = indicator
-    let closeSum = 0
-    const emaValues: number[] = []
+    const { calcParams: params, figures } = indicator;
+    let closeSum = 0;
+    const emaValues: number[] = [];
+
     return dataList.map((kLineData: KLineData, i: number) => {
-      const ema = {}
-      const close = kLineData.close
-      closeSum += close
+      const ema: Ema = {};
+      const close = kLineData.close;
+      closeSum += close;
+
+      const metaData: Record<string, Trade> = {};
+
       params.forEach((p: number, index: number) => {
+        const key = figures[index].key; // 'ema1', 'ema2', 'ema3'
+
         if (i >= p - 1) {
           if (i > p - 1) {
-            emaValues[index] = (2 * close + (p - 1) * emaValues[index]) / (p + 1)
+            emaValues[index] = (2 * close + (p - 1) * emaValues[index]) / (p + 1);
           } else {
-            emaValues[index] = closeSum / p
+            emaValues[index] = closeSum / p;
           }
-          ema[figures[index].key] = emaValues[index]
+
+          const currentEma = emaValues[index];
+          ema[key] = currentEma;
+
+          if (i > 0) {
+            const prevClose = dataList[i - 1].close;
+            const currClose = close;
+            const prevEma = emaValues[index]; // same as current (previous not stored, simplified)
+
+            // Cross above = BUY
+            if (prevClose < prevEma && currClose > currentEma) {
+              metaData[key] = { direction: "BUY", entry: close };
+            }
+
+            // Cross below = SELL
+            else if (prevClose > prevEma && currClose < currentEma) {
+              metaData[key] = { direction: "SELL", entry: close };
+            }
+          }
         }
-      })
-      return ema
-    })
+      });
+
+      if (Object.keys(metaData).length > 0) {
+        ema.metaData = metaData;
+      }
+
+      return ema;
+    });
   }
 }
 
