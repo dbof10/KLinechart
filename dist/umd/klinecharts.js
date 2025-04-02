@@ -5103,7 +5103,7 @@ function signalToString(value) {
 }
 function toWaveConfiguration(params) {
     var swingReversal = Number(params[0]) || 2; // default to 3 if not valid
-    var liteMode = Boolean(params[1]);
+    var liteMode = Boolean(params[1]) || false;
     return {
         swingReversal: swingReversal,
         liteMode: liteMode,
@@ -5169,7 +5169,6 @@ var TWave = {
         return onRender(extendedData, highs, lows, closes, config);
     },
     draw: function (_a) {
-        var _b, _c, _d, _e;
         var ctx = _a.ctx; _a.barSpace; var visibleRange = _a.visibleRange, indicator = _a.indicator, xAxis = _a.xAxis, yAxis = _a.yAxis;
         var from = visibleRange.from, to = visibleRange.to;
         var fontSize = 14;
@@ -5185,7 +5184,7 @@ var TWave = {
                 var yBottom = yAxis.convertToPixel(data.low);
                 var yTop = yAxis.convertToPixel(data.high);
                 if (data.textPosition === TextPosition.Up) {
-                    if (config.liteMode) {
+                    if (config.liteMode && (data.algo || data.secondAlgo)) {
                         drawLiteMode(ctx, x, yTop - 25, "SELL");
                     }
                     else {
@@ -5196,16 +5195,16 @@ var TWave = {
                         var initialPadding = yTop - 10 - fontSize;
                         ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
                         ctx.fillStyle = COLOR_SUPPLY;
-                        if (((_b = data.algo) === null || _b === void 0 ? void 0 : _b.length) > 0) {
+                        if (data.algo) {
                             ctx.fillText(data.algo, x, initialPadding - 15 - fontSize);
                         }
-                        if (((_c = data.secondAlgo) === null || _c === void 0 ? void 0 : _c.length) > 0) {
+                        if (data.secondAlgo) {
                             ctx.fillText(data.secondAlgo, x, initialPadding - 30 - fontSize);
                         }
                     }
                 }
                 else {
-                    if (config.liteMode) {
+                    if (config.liteMode && (data.algo || data.secondAlgo)) {
                         drawLiteMode(ctx, x, yBottom + 5, "BUY");
                     }
                     else {
@@ -5216,10 +5215,10 @@ var TWave = {
                         var initialPadding = yBottom + 10 + fontSize;
                         ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
                         ctx.fillStyle = COLOR_DEMAND;
-                        if (((_d = data.algo) === null || _d === void 0 ? void 0 : _d.length) > 0) {
+                        if (data.algo) {
                             ctx.fillText(data.algo, x, initialPadding + 15 + fontSize);
                         }
-                        if (((_e = data.secondAlgo) === null || _e === void 0 ? void 0 : _e.length) > 0) {
+                        if (data.secondAlgo) {
                             ctx.fillText(data.secondAlgo, x, initialPadding + 30 + fontSize);
                         }
                     }

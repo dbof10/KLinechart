@@ -318,7 +318,7 @@ function signalToString(value?: number): string {
 
 function toWaveConfiguration(params: any[]): TWaveConfiguration {
   const swingReversal = Number(params[0]) || 2; // default to 3 if not valid
-  const liteMode = Boolean(params[1]);
+  const liteMode = Boolean(params[1]) || false;
 
   return {
     swingReversal,
@@ -428,7 +428,7 @@ const TWave: IndicatorTemplate<TWaveBar> = {
         const yTop = yAxis.convertToPixel(data.high!);
 
         if (data.textPosition === TextPosition.Up) {
-          if (config.liteMode) {
+          if (config.liteMode && (data.algo || data.secondAlgo)) {
             drawLiteMode(ctx, x, yTop - 25, "SELL");
           } else {
             ctx.fillStyle = COLOR_DEMAND;
@@ -439,16 +439,16 @@ const TWave: IndicatorTemplate<TWaveBar> = {
             ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
 
             ctx.fillStyle = COLOR_SUPPLY;
-            if (data.algo?.length > 0) {
-              ctx.fillText(data.algo!, x, initialPadding - 15 - fontSize);
+            if (data.algo) {
+              ctx.fillText(data.algo, x, initialPadding - 15 - fontSize);
             }
-            if (data.secondAlgo?.length > 0) {
-              ctx.fillText(data.secondAlgo!, x, initialPadding - 30 - fontSize);
+            if (data.secondAlgo) {
+              ctx.fillText(data.secondAlgo, x, initialPadding - 30 - fontSize);
             }
           }
 
         } else {
-          if (config.liteMode) {
+          if (config.liteMode && (data.algo || data.secondAlgo)) {
             drawLiteMode(ctx, x, yBottom + 5, "BUY");
           } else {
             ctx.fillStyle = COLOR_SUPPLY;
@@ -460,11 +460,11 @@ const TWave: IndicatorTemplate<TWaveBar> = {
             ctx.fillText(data.totalDeltaVolume.toString(), x, initialPadding);
 
             ctx.fillStyle = COLOR_DEMAND;
-            if (data.algo?.length > 0) {
-              ctx.fillText(data.algo!, x, initialPadding + 15 + fontSize);
+            if (data.algo) {
+              ctx.fillText(data.algo, x, initialPadding + 15 + fontSize);
             }
-            if (data.secondAlgo?.length > 0) {
-              ctx.fillText(data.secondAlgo!, x, initialPadding + 30 + fontSize);
+            if (data.secondAlgo) {
+              ctx.fillText(data.secondAlgo, x, initialPadding + 30 + fontSize);
             }
           }
         }
