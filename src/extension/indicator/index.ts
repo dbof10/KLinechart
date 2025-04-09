@@ -55,6 +55,7 @@ import averageTrueRange from "./atr";
 import Quarters from "./Quarters";
 import PositionMarker from "./position/marker";
 import KLineData from "../../common/KLineData";
+import TAutoStructure from "./twave/TAutoStructure";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -66,7 +67,7 @@ const extensions = [
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
   TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
-  YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker
+  YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure
 ]
 
 const mapName = {
@@ -103,6 +104,7 @@ const mapName = {
   "TBA": "TSupply Demand Oscillator",
   "TCD": "TCumulative Delta",
   "TWA": "TWave",
+  "TAS": "TAutoStructure",
   "YEST": "Yesterday Low",
   "VWAP": "VWAP",
   "ATR": "Average True Range",

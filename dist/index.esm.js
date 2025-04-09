@@ -5604,6 +5604,175 @@ var PositionMarker = {
     }
 };
 
+var DIRECTION_UP = "UP";
+var DIRECTION_DOWN = "DOWN";
+var DIRECTION_NONE = "NONE";
+var TAutoStructure = {
+    name: "TAS",
+    shortName: "TAutoStructure",
+    isOverlay: true,
+    calcParams: [21],
+    calc: function (dataList, indicator) {
+        var _a;
+        var result = [];
+        var period = indicator.calcParams[0];
+        var directionList = [];
+        var volumeStreak = [];
+        var hlbc = [];
+        var wvbc = [];
+        var normHLBC = [];
+        var normWVBC = [];
+        var lineDirection = DIRECTION_NONE;
+        var lines = [];
+        for (var i = 0; i < dataList.length; i++) {
+            var item = dataList[i];
+            // Direction
+            var dir = DIRECTION_NONE;
+            if (item.close > item.open)
+                dir = DIRECTION_UP;
+            else if (item.close < item.open)
+                dir = DIRECTION_DOWN;
+            directionList.push(dir);
+            // Volume streak
+            var vol = 0;
+            for (var j = i; j >= 0; j--) {
+                if (directionList[j] !== dir)
+                    break;
+                vol += (_a = dataList[j].volume) !== null && _a !== void 0 ? _a : 0;
+            }
+            volumeStreak.push(vol);
+            // WVBC
+            var volCompare = -1;
+            var oppositeCount = 0;
+            for (var j = i - 1; j >= 0; j--) {
+                if (directionList[j] === opposite(dir)) {
+                    oppositeCount++;
+                    continue;
+                }
+                if (volumeStreak[j] > vol) {
+                    volCompare = i - j - oppositeCount - 1;
+                    break;
+                }
+            }
+            wvbc.push(Math.max(volCompare, 0));
+            // HLBC
+            var barsBack = -1;
+            if (dir === DIRECTION_UP) {
+                for (var j = i - 1; j >= 0; j--) {
+                    if (dataList[j].close > item.close) {
+                        barsBack = i - j - 1;
+                        break;
+                    }
+                }
+            }
+            else if (dir === DIRECTION_DOWN) {
+                for (var j = i - 1; j >= 0; j--) {
+                    if (dataList[j].close < item.close) {
+                        barsBack = i - j - 1;
+                        break;
+                    }
+                }
+            }
+            hlbc.push(barsBack < 0 ? i : barsBack);
+            // Normalize
+            normHLBC.push(normalizeLast(hlbc, i, period));
+            normWVBC.push(normalizeLast(wvbc, i, period));
+            // Structure signal
+            var signal = DIRECTION_NONE;
+            if (i >= 2 &&
+                normHLBC[i - 2] > 0 &&
+                normWVBC[i - 2] > 0 &&
+                directionList[i - 1] !== directionList[i - 2]) {
+                signal = directionList[i - 2];
+            }
+            // Manage lines
+            var structure = null;
+            if (i >= 2 && signal !== DIRECTION_NONE) {
+                if (lineDirection === DIRECTION_NONE) {
+                    lineDirection = signal;
+                }
+                else if (lineDirection !== signal) {
+                    lines.length = 0; // clear on direction flip
+                    lineDirection = signal;
+                }
+                var baseIndex = i - 2;
+                structure = {
+                    index: baseIndex,
+                    direction: signal,
+                    price: signal === DIRECTION_UP ? dataList[baseIndex].high : dataList[baseIndex].low
+                };
+                lines.push(structure);
+            }
+            result.push(null); // default
+            if (lines.length > 0) {
+                result[i] = lines[lines.length - 1];
+            }
+        }
+        return result;
+    },
+    draw: function (_a) {
+        var e_1, _b;
+        var ctx = _a.ctx, xAxis = _a.xAxis, yAxis = _a.yAxis, visibleRange = _a.visibleRange, indicator = _a.indicator;
+        var from = visibleRange.from, to = visibleRange.to;
+        var data = indicator.result;
+        // Map of yInPixel -> { x1, x2, color }
+        var yMap = new Map();
+        for (var i = from; i < to; i++) {
+            var line = data[i];
+            if (!line)
+                continue;
+            var y = yAxis.convertToPixel(line.price);
+            var roundedY = Math.round(y); // round to nearest pixel to dedup
+            var x1 = xAxis.convertToPixel(line.index);
+            var x2 = xAxis.convertToPixel(i);
+            var color = line.direction === DIRECTION_UP ? COLOR_SUPPLY : COLOR_DEMAND;
+            if (!yMap.has(roundedY)) {
+                yMap.set(roundedY, { x1: x1, x2: x2, color: color });
+            }
+            else {
+                var entry = yMap.get(roundedY);
+                entry.x2 = x2; // always extend to latest bar
+            }
+        }
+        try {
+            for (var _c = __values(yMap.entries()), _d = _c.next(); !_d.done; _d = _c.next()) {
+                var _e = __read(_d.value, 2), y = _e[0], _f = _e[1], x1 = _f.x1, x2 = _f.x2, color = _f.color;
+                ctx.beginPath();
+                ctx.moveTo(x1, y);
+                ctx.lineTo(x2, y);
+                ctx.strokeStyle = color;
+                ctx.lineWidth = 1;
+                ctx.stroke();
+            }
+        }
+        catch (e_1_1) { e_1 = { error: e_1_1 }; }
+        finally {
+            try {
+                if (_d && !_d.done && (_b = _c.return)) _b.call(_c);
+            }
+            finally { if (e_1) throw e_1.error; }
+        }
+        return false;
+    },
+};
+function opposite(dir) {
+    if (dir === DIRECTION_UP)
+        return DIRECTION_DOWN;
+    if (dir === DIRECTION_DOWN)
+        return DIRECTION_UP;
+    return DIRECTION_NONE;
+}
+function normalizeLast(arr, current, period) {
+    if (current < period)
+        return 0;
+    var slice = arr.slice(current - period, current);
+    var mean = slice.reduce(function (a, b) { return a + b; }, 0) / period;
+    var variance = slice.reduce(function (sum, val) { return sum + Math.pow((val - mean), 2); }, 0) / period;
+    var std = Math.sqrt(variance);
+    var z = std === 0 ? 0 : (arr[current] - mean) / std;
+    return Math.max(z, 0);
+}
+
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -5626,7 +5795,7 @@ var extensions$2 = [
     psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
     stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
     TWaveVolume, TBlockVolume, TPace, TBidAskOscillator, TCumulativeDelta, TWave,
-    YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker
+    YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure
 ];
 var mapName = {
     "AVP": "Average Price",
@@ -5662,6 +5831,7 @@ var mapName = {
     "TBA": "TSupply Demand Oscillator",
     "TCD": "TCumulative Delta",
     "TWA": "TWave",
+    "TAS": "TAutoStructure",
     "YEST": "Yesterday Low",
     "VWAP": "VWAP",
     "ATR": "Average True Range",
@@ -5715,7 +5885,7 @@ var IndicatorStore = /** @class */ (function () {
         this._chartStore = chartStore;
     }
     IndicatorStore.prototype._overrideInstance = function (instance, indicator) {
-        var shortName = indicator.shortName, series = indicator.series, calcParams = indicator.calcParams, precision = indicator.precision, figures = indicator.figures, minValue = indicator.minValue, maxValue = indicator.maxValue, shouldOhlc = indicator.shouldOhlc, shouldFormatBigNumber = indicator.shouldFormatBigNumber, visible = indicator.visible, zLevel = indicator.zLevel, styles = indicator.styles, extendData = indicator.extendData, regenerateFigures = indicator.regenerateFigures, createTooltipDataSource = indicator.createTooltipDataSource, draw = indicator.draw, calc = indicator.calc; indicator.alertCallback;
+        var shortName = indicator.shortName, series = indicator.series, calcParams = indicator.calcParams, precision = indicator.precision, figures = indicator.figures, minValue = indicator.minValue, maxValue = indicator.maxValue, shouldOhlc = indicator.shouldOhlc, shouldFormatBigNumber = indicator.shouldFormatBigNumber, visible = indicator.visible, zLevel = indicator.zLevel, styles = indicator.styles, extendData = indicator.extendData, regenerateFigures = indicator.regenerateFigures, createTooltipDataSource = indicator.createTooltipDataSource, draw = indicator.draw, calc = indicator.calc;
         var updateFlag = false;
         if (isString(shortName) && instance.setShortName(shortName)) {
             updateFlag = true;

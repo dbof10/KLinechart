@@ -20,7 +20,7 @@ import type ChartStore from './ChartStore'
 import { type IndicatorCreate, type Indicator } from '../component/Indicator'
 import type IndicatorImp from '../component/Indicator'
 import { IndicatorSeries } from '../component/Indicator'
-import { getIndicatorClass } from '../extension/indicator/index'
+import { getIndicatorClass } from '../extension/indicator'
 
 export default class IndicatorStore {
   private readonly _chartStore: ChartStore
@@ -34,7 +34,7 @@ export default class IndicatorStore {
     const {
       shortName, series, calcParams, precision, figures, minValue, maxValue,
       shouldOhlc, shouldFormatBigNumber, visible, zLevel, styles, extendData,
-      regenerateFigures, createTooltipDataSource, draw, calc, alertCallback
+      regenerateFigures, createTooltipDataSource, draw, calc,
     } = indicator
     let updateFlag = false
     if (isString(shortName) && instance.setShortName(shortName)) {
