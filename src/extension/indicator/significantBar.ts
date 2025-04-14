@@ -40,11 +40,13 @@ const SBarDetector: IndicatorTemplate<SBarMarker> = {
 
       const spread = bar.high - bar.low;
       const mid = (bar.high + bar.low) / 2;
+      const isBullishBody = bar.close > bar.open;
+      const isBearishBody = bar.close < bar.open;
       const isSpreadOK = spread > atrVal * sBarAtrMin && spread <= atrVal * sBarAtrMax;
 
-      if (isSpreadOK && bar.close > mid) {
+      if (isSpreadOK && bar.close > mid && isBullishBody) {
         result.push({ type: "UP", price: bar.low});
-      } else if (isSpreadOK && bar.close < mid) {
+      } else if (isSpreadOK && bar.close < mid && isBearishBody) {
         result.push({ type: "DOWN", price: bar.high });
       } else {
         result.push(EMPTY);
