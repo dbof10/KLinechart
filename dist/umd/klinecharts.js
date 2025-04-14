@@ -5430,22 +5430,32 @@ var averageTrueRange = {
     calc: function (klineData, indicator) {
         var atrValues = [];
         var period = indicator.calcParams[0];
+        if (klineData.length === 0 || period <= 0)
+            return atrValues;
+        var trSum = 0;
         for (var i = 0; i < klineData.length; i++) {
             var atr = {};
-            if (i < period) {
-                atrValues.push(atr);
+            if (i === 0) {
+                atrValues.push(atr); // No ATR on the first bar
                 continue;
             }
-            var trSum = 0;
-            for (var j = 0; j < period; j++) {
-                var tr = Math.max(klineData[i - j].high - klineData[i - j].low, // True Range
-                Math.abs(klineData[i - j].high - klineData[i - j - 1].close), // High minus previous close
-                Math.abs(klineData[i - j].low - klineData[i - j - 1].close) // Low minus previous close
-                );
+            var curr = klineData[i];
+            var prev = klineData[i - 1];
+            var tr = Math.max(curr.high - curr.low, Math.abs(curr.high - prev.close), Math.abs(curr.low - prev.close));
+            if (i < period) {
                 trSum += tr;
+                atrValues.push(atr);
             }
-            atr.atr = trSum / period;
-            atrValues.push(atr);
+            else if (i === period) {
+                trSum += tr;
+                atr.atr = trSum / period;
+                atrValues.push(atr);
+            }
+            else {
+                var prevATR = atrValues[i - 1].atr;
+                atr.atr = (prevATR * (period - 1) + tr) / period;
+                atrValues.push(atr);
+            }
         }
         return atrValues;
     }
@@ -5778,6 +5788,76 @@ function normalizeLast(arr, current, period) {
     return Math.max(z, 0);
 }
 
+var EMPTY = { type: null, price: 0 };
+var SBarDetector = {
+    name: "SBA",
+    shortName: "Significant Bar",
+    isOverlay: true,
+    calcParams: [14, 1.25, 1.5],
+    calc: function (dataList, indicator) {
+        var _a;
+        var result = [];
+        var _b = __read(indicator.calcParams, 3), atrLength = _b[0], sBarAtrMin = _b[1], sBarAtrMax = _b[2];
+        var atrIndicator = {
+            name: "ATR",
+            shortName: "ATR",
+            calcParams: [atrLength],
+            precision: 2,
+            result: [],
+        };
+        var atrValues = averageTrueRange.calc(dataList, atrIndicator);
+        for (var i = 0; i < dataList.length; i++) {
+            var bar = dataList[i];
+            var atrVal = (_a = atrValues[i]) === null || _a === void 0 ? void 0 : _a.atr;
+            if (i < atrLength || !atrVal || !bar.open || !bar.high || !bar.low || !bar.close) {
+                result.push(EMPTY);
+                continue;
+            }
+            var spread = bar.high - bar.low;
+            var mid = (bar.high + bar.low) / 2;
+            var isSpreadOK = spread > atrVal * sBarAtrMin && spread <= atrVal * sBarAtrMax;
+            if (isSpreadOK && bar.close > mid) {
+                result.push({ type: "UP", price: bar.low });
+            }
+            else if (isSpreadOK && bar.close < mid) {
+                result.push({ type: "DOWN", price: bar.high });
+            }
+            else {
+                result.push(EMPTY);
+            }
+        }
+        return result;
+    },
+    draw: function (_a) {
+        var ctx = _a.ctx, xAxis = _a.xAxis, yAxis = _a.yAxis, visibleRange = _a.visibleRange, indicator = _a.indicator, kLineDataList = _a.kLineDataList, barSpace = _a.barSpace;
+        var from = visibleRange.from, to = visibleRange.to;
+        var data = indicator.result;
+        var halfBarWidth = Math.floor(barSpace.bar / 2);
+        for (var i = from; i < to; i++) {
+            var marker = data[i];
+            if (!marker || !marker.type)
+                continue;
+            var bar = kLineDataList[i];
+            if (!bar)
+                continue;
+            var x = xAxis.convertToPixel(i);
+            var yHigh = yAxis.convertToPixel(bar.high);
+            var yLow = yAxis.convertToPixel(bar.low);
+            var rectX = x - halfBarWidth;
+            var rectY = Math.min(yHigh, yLow);
+            var rectHeight = Math.abs(yHigh - yLow);
+            var rectWidth = barSpace.bar;
+            // Use pre-blended RGBA for better perf
+            ctx.fillStyle =
+                marker.type === "UP"
+                    ? "rgba(0, 191, 255, 0.25)" // DeepSkyBlue
+                    : "rgba(255, 165, 0, 0.25)"; // Orange
+            ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+        }
+        return false;
+    }
+};
+
 /**
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -5800,7 +5880,8 @@ var extensions$2 = [
     psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
     stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
     TWaveVolume, TBlockVolume, TPace, TBidAskOscillator, TCumulativeDelta, TWave,
-    YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure
+    YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure,
+    SBarDetector
 ];
 var mapName = {
     "AVP": "Average Price",
@@ -5841,7 +5922,8 @@ var mapName = {
     "VWAP": "VWAP",
     "ATR": "Average True Range",
     "QUA": "Quarter Session",
-    "POS": "Position Marker"
+    "POS": "Position Marker",
+    "SBA": "Significant Bar"
 };
 extensions$2.forEach(function (indicator) {
     indicators[indicator.name] = IndicatorImp.extend(indicator);
@@ -5865,6 +5947,10 @@ function getSupportedIndicators() {
     });
     return list;
 }
+/**
+ * for backtest API
+ * @param name
+ */
 function getIndicatorCalcByName(name) {
     var _a;
     var template = extensions$2.find(function (ext) { return ext.name === name; });

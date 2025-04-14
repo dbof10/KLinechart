@@ -56,6 +56,7 @@ import Quarters from "./Quarters";
 import PositionMarker from "./position/marker";
 import KLineData from "../../common/KLineData";
 import TAutoStructure from "./twave/TAutoStructure";
+import SignificantBar from "./significantBar";
 
 const indicators: Record<string, IndicatorConstructor> = {}
 
@@ -67,7 +68,8 @@ const extensions = [
   psychologicalLine, rateOfChange, relativeStrengthIndex, simpleMovingAverage,
   stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
   TWaveVolume, TBlockVolume, Tpace, TBidAskOscillator, TCumulativeDelta, TWave,
-  YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure
+  YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure,
+  SignificantBar
 ]
 
 const mapName = {
@@ -109,7 +111,8 @@ const mapName = {
   "VWAP": "VWAP",
   "ATR": "Average True Range",
   "QUA": "Quarter Session",
-  "POS": "Position Marker"
+  "POS": "Position Marker",
+  "SBA": "Significant Bar"
 };
 
 
@@ -142,6 +145,10 @@ function getSupportedIndicators(): DisplayIndicator[] {
 
 }
 
+/**
+ * for backtest API
+ * @param name
+ */
 function getIndicatorCalcByName<D = any>(name: string): Nullable<(dataList: KLineData[], indicator: Indicator<D>) => D[] | Promise<D[]>> {
   const template = extensions.find(ext => ext.name === name)
   return template?.calc ?? null
