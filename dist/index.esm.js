@@ -5517,7 +5517,7 @@ var Quarters = {
 var COLOR_ENTRY = '#ffce55'; // Blue
 var COLOR_WIN = '#04cf58'; // Green
 var COLOR_LOSS = '#ea21ff'; // Red
-function drawTradeTriangle(ctx, x, y, size, direction, color) {
+function drawTradeTriangle$1(ctx, x, y, size, direction, color) {
     ctx.beginPath();
     if (direction === "UP") {
         ctx.moveTo(x, y);
@@ -5608,7 +5608,7 @@ var PositionMarker = {
                     triangleDirection = "UP";
                 }
             }
-            drawTradeTriangle(ctx, x, y + offsetY, size, triangleDirection, marker.color);
+            drawTradeTriangle$1(ctx, x, y + offsetY, size, triangleDirection, marker.color);
         }
         return false;
     }
@@ -5783,73 +5783,155 @@ function normalizeLast(arr, current, period) {
     return Math.max(z, 0);
 }
 
-var EMPTY = { type: null, price: 0 };
-var SBarDetector = {
+var BOX_ALPHA = 0.2;
+function drawTradeTriangle(ctx, x, y, size, direction, color) {
+    ctx.beginPath();
+    if (direction === "UP") {
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - size, y + size);
+        ctx.lineTo(x + size, y + size);
+    }
+    else {
+        ctx.moveTo(x, y);
+        ctx.lineTo(x - size, y - size);
+        ctx.lineTo(x + size, y - size);
+    }
+    ctx.closePath();
+    ctx.fillStyle = color;
+    ctx.fill();
+}
+function drawRectWithAlpha(ctx, x1, y1, x2, y2, color, alpha) {
+    ctx.fillStyle = color;
+    ctx.globalAlpha = alpha;
+    ctx.fillRect(Math.min(x1, x2), Math.min(y1, y2), Math.abs(x2 - x1), Math.abs(y2 - y1));
+    ctx.globalAlpha = 1.0;
+}
+var TBar = {
     name: "SBA",
-    shortName: "Significant Bar",
+    shortName: "TBar",
     isOverlay: true,
-    calcParams: [14, 1.25, 1.5],
-    calc: function (dataList, indicator) {
-        var _a;
+    calcParams: [14, 1.25],
+    calc: function (dataList, indicator, params) {
+        var _a, _b;
+        var atrPeriod = indicator.calcParams[0];
+        var multiplier = indicator.calcParams[1];
         var result = [];
-        var _b = __read(indicator.calcParams, 3), atrLength = _b[0], sBarAtrMin = _b[1], sBarAtrMax = _b[2];
-        var atrIndicator = {
-            name: "ATR",
-            shortName: "ATR",
-            calcParams: [atrLength],
-            precision: 2,
-            result: [],
-        };
-        var atrValues = averageTrueRange.calc(dataList, atrIndicator);
-        for (var i = 0; i < dataList.length; i++) {
-            var bar = dataList[i];
-            var atrVal = (_a = atrValues[i]) === null || _a === void 0 ? void 0 : _a.atr;
-            if (i < atrLength || !atrVal || !bar.open || !bar.high || !bar.low || !bar.close) {
-                result.push(EMPTY);
-                continue;
+        var atrList = [];
+        var comboSeries = [];
+        var direction = 0;
+        var sma = function (arr) { return arr.reduce(function (a, b) { return a + b; }, 0) / arr.length; };
+        var _loop_1 = function (i) {
+            var item = dataList[i];
+            var prev = dataList[i - 1];
+            var high = item.high;
+            var low = item.low;
+            var open_1 = item.open;
+            var close_1 = item.close;
+            var spread = high - low;
+            // ATR
+            var tr = i === 0
+                ? high - low
+                : Math.max(high - low, Math.abs(high - prev.close), Math.abs(low - prev.close));
+            atrList.push(tr);
+            if (atrList.length > atrPeriod)
+                atrList.shift();
+            var atr = sma(atrList);
+            var isBullish = close_1 > open_1 && close_1 >= ((_a = prev === null || prev === void 0 ? void 0 : prev.close) !== null && _a !== void 0 ? _a : 0);
+            var isBearish = close_1 < open_1 && close_1 <= ((_b = prev === null || prev === void 0 ? void 0 : prev.close) !== null && _b !== void 0 ? _b : 0);
+            var isInsideBar = prev && high < prev.high && low > prev.low;
+            var commits = (isBullish && close_1 > low + spread / 2) ||
+                (isBearish && close_1 < high - spread / 2);
+            var isSBar = spread > atr * multiplier && !isInsideBar && commits;
+            var barResult = {};
+            if (isSBar) {
+                if (isBullish)
+                    barResult.upSBar = low;
+                if (isBearish)
+                    barResult.downSBar = high;
+                if (comboSeries.length > 1) {
+                    var first = comboSeries[0];
+                    var last = comboSeries[comboSeries.length - 1];
+                    var firstBar = dataList[first];
+                    var lastBar = dataList[last];
+                    var comboHigh = direction === 1 ? lastBar.high : firstBar.high;
+                    var comboLow = direction === 1 ? firstBar.low : lastBar.low;
+                    var comboSpread = Math.abs(comboHigh - comboLow);
+                    var avgATR = comboSeries.reduce(function (sum, idx) { var _a; return sum + ((_a = atrList[idx]) !== null && _a !== void 0 ? _a : atr); }, 0) /
+                        comboSeries.length;
+                    var comboClose = lastBar.close;
+                    var comboCommits = (comboClose > comboLow + comboSpread / 2) ||
+                        (comboClose < comboHigh - comboSpread / 2);
+                    if (comboSpread > avgATR * multiplier && comboCommits) {
+                        for (var j = result.length; j <= last; j++)
+                            result.push({});
+                        result[last].comboBox = {
+                            from: first,
+                            to: last,
+                            high: comboHigh,
+                            low: comboLow,
+                            color: direction === 1 ? COLOR_DEMAND : COLOR_SUPPLY
+                        };
+                    }
+                }
+                comboSeries.length = 0;
+                result.push(barResult);
+                return "continue";
             }
-            var spread = bar.high - bar.low;
-            var mid = (bar.high + bar.low) / 2;
-            var isBullishBody = bar.close > bar.open;
-            var isBearishBody = bar.close < bar.open;
-            var isSpreadOK = spread > atrVal * sBarAtrMin && spread <= atrVal * sBarAtrMax;
-            if (isSpreadOK && bar.close > mid && isBullishBody) {
-                result.push({ type: "UP", price: bar.low });
-            }
-            else if (isSpreadOK && bar.close < mid && isBearishBody) {
-                result.push({ type: "DOWN", price: bar.high });
+            // Combo logic
+            if (comboSeries.length === 0) {
+                comboSeries.push(i);
             }
             else {
-                result.push(EMPTY);
+                var last = comboSeries[comboSeries.length - 1];
+                var lastBar = dataList[last];
+                var lastBullish = lastBar.close > lastBar.open;
+                var lastBearish = lastBar.close < lastBar.open;
+                var sameDirection = (isBullish && lastBullish) || (isBearish && lastBearish);
+                var structural = (isBullish && (high > lastBar.high || isInsideBar)) ||
+                    (isBearish && (low < lastBar.low || isInsideBar));
+                if (sameDirection && structural) {
+                    direction = isBullish ? 1 : -1;
+                    comboSeries.push(i);
+                }
+                else {
+                    comboSeries.length = 0;
+                    comboSeries.push(i);
+                }
             }
+            result.push(barResult);
+        };
+        for (var i = 0; i < dataList.length; i++) {
+            _loop_1(i);
         }
         return result;
     },
     draw: function (_a) {
-        var ctx = _a.ctx, xAxis = _a.xAxis, yAxis = _a.yAxis, visibleRange = _a.visibleRange, indicator = _a.indicator, kLineDataList = _a.kLineDataList, barSpace = _a.barSpace;
+        var ctx = _a.ctx, xAxis = _a.xAxis, yAxis = _a.yAxis, visibleRange = _a.visibleRange, indicator = _a.indicator;
         var from = visibleRange.from, to = visibleRange.to;
         var data = indicator.result;
-        var halfBarWidth = Math.floor(barSpace.bar / 2);
         for (var i = from; i < to; i++) {
-            var marker = data[i];
-            if (!marker || !marker.type)
-                continue;
-            var bar = kLineDataList[i];
-            if (!bar)
+            var d = data[i];
+            if (!d)
                 continue;
             var x = xAxis.convertToPixel(i);
-            var yHigh = yAxis.convertToPixel(bar.high);
-            var yLow = yAxis.convertToPixel(bar.low);
-            var rectX = x - halfBarWidth;
-            var rectY = Math.min(yHigh, yLow);
-            var rectHeight = Math.abs(yHigh - yLow);
-            var rectWidth = barSpace.bar;
-            // Use pre-blended RGBA for better perf
-            ctx.fillStyle =
-                marker.type === "UP"
-                    ? "rgba(0, 191, 255, 0.25)" // DeepSkyBlue
-                    : "rgba(255, 165, 0, 0.25)"; // Orange
-            ctx.fillRect(rectX, rectY, rectWidth, rectHeight);
+            if (d.upSBar) {
+                var y = yAxis.convertToPixel(d.upSBar);
+                drawTradeTriangle(ctx, x, y + 6, 6, "UP", COLOR_DEMAND);
+            }
+            if (d.downSBar) {
+                var y = yAxis.convertToPixel(d.downSBar);
+                drawTradeTriangle(ctx, x, y - 6, 6, "DOWN", COLOR_SUPPLY);
+            }
+            if (d.comboBox) {
+                var _b = d.comboBox, boxFrom = _b.from, boxTo = _b.to, high = _b.high, low = _b.low, color = _b.color;
+                if (boxTo >= visibleRange.from && boxFrom <= visibleRange.to) {
+                    var x1 = xAxis.convertToPixel(boxFrom);
+                    var x2 = xAxis.convertToPixel(boxTo);
+                    var y1 = yAxis.convertToPixel(high);
+                    var y2 = yAxis.convertToPixel(low);
+                    drawRectWithAlpha(ctx, x1, y1, x2, y2, color, BOX_ALPHA);
+                }
+            }
         }
         return false;
     }
@@ -5878,7 +5960,7 @@ var extensions$2 = [
     stoch, stopAndReverse, tripleExponentiallySmoothedAverage, volume, volumeRatio, williamsR,
     TWaveVolume, TBlockVolume, TPace, TBidAskOscillator, TCumulativeDelta, TWave,
     YesterdayStructure, VWAP, averageTrueRange, Quarters, PositionMarker, TAutoStructure,
-    SBarDetector
+    TBar
 ];
 var mapName = {
     "AVP": "Average Price",
@@ -5920,7 +6002,7 @@ var mapName = {
     "ATR": "Average True Range",
     "QUA": "Quarter Session",
     "POS": "Position Marker",
-    "SBA": "Significant Bar"
+    "SBA": "TBar"
 };
 extensions$2.forEach(function (indicator) {
     indicators[indicator.name] = IndicatorImp.extend(indicator);

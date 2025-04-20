@@ -112,7 +112,7 @@ const mapName = {
   "ATR": "Average True Range",
   "QUA": "Quarter Session",
   "POS": "Position Marker",
-  "SBA": "Significant Bar"
+  "SBA": "TBar"
 };
 
 
